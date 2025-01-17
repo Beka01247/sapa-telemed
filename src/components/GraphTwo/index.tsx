@@ -6,6 +6,7 @@ import RegionOrganizationSelector from "@/components/RegionOrganizationSelector"
 import "./GraphTwo.css";
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
+import { ru } from "date-fns/locale";
 
 interface ECGData {
   ecgDescription: string;
@@ -58,21 +59,24 @@ const GraphTwo: React.FC<GraphTwoProps> = ({
 
   const fetchData = async (): Promise<void> => {
     if (!organization || !dateFrom || !dateTo) {
-      alert("Пожалуйста, выберите регион, организацию и диапазон дат.");
+      alert("Пожалуйста, выберите регион, организацию и дату.");
       return;
     }
 
+    const formattedDateFrom = dateFrom.split("-").reverse().join("-");
+    const formattedDateTo = dateTo.split("-").reverse().join("-");
+
     const token = await fetchToken();
     if (!token) {
+      alert("Failed to fetch authorization token");
       return;
     }
 
     setIsLoading(true);
-    setErrorMessage(null);
 
     try {
       const response = await axios.get<ECGData[]>(
-        `https://client.sapatelemed.kz/ecgList/api/ECGResults/${organization}/${dateFrom}/${dateTo}`,
+        `https://client.sapatelemed.kz/ecgList/api/ECGResults/${organization}/${formattedDateFrom}/${formattedDateTo}`,
         {
           headers: {
             Authorization: `Bearer ${token}`,
@@ -82,7 +86,6 @@ const GraphTwo: React.FC<GraphTwoProps> = ({
       processGraphData(response.data);
     } catch (error) {
       console.error("Error fetching ECG data:", error);
-      setErrorMessage("Ошибка при загрузке данных. Попробуйте позже.");
     } finally {
       setIsLoading(false);
     }
@@ -159,22 +162,48 @@ const GraphTwo: React.FC<GraphTwoProps> = ({
           <div className="form-group">
             <label htmlFor="dateFrom">От (дата):</label>
             <DatePicker
-              selected={dateFrom ? new Date(dateFrom) : null}
-              onChange={(date: Date | null) =>
-                setDateFrom(date ? date.toISOString().split("T")[0] : "")
-              }
+              selected={
+                dateFrom
+                  ? new Date(dateFrom.split("-").reverse().join("-"))
+                  : null
+              } // Correctly use dateFrom
+              onChange={(date: Date | null) => {
+                if (date) {
+                  const day = date.getDate().toString().padStart(2, "0");
+                  const month = (date.getMonth() + 1)
+                    .toString()
+                    .padStart(2, "0");
+                  const year = date.getFullYear();
+                  setDateFrom(`${day}-${month}-${year}`);
+                } else {
+                  setDateFrom("");
+                }
+              }}
               dateFormat="dd-MM-yyyy"
+              locale={ru}
               className="form-input"
             />
           </div>
           <div className="form-group">
             <label htmlFor="dateTo">До (дата):</label>
             <DatePicker
-              selected={dateTo ? new Date(dateTo) : null}
-              onChange={(date: Date | null) =>
-                setDateTo(date ? date.toISOString().split("T")[0] : "")
-              }
+              selected={
+                dateTo ? new Date(dateTo.split("-").reverse().join("-")) : null
+              } // Correctly use dateTo
+              onChange={(date: Date | null) => {
+                if (date) {
+                  const day = date.getDate().toString().padStart(2, "0");
+                  const month = (date.getMonth() + 1)
+                    .toString()
+                    .padStart(2, "0");
+                  const year = date.getFullYear();
+                  setDateTo(`${day}-${month}-${year}`);
+                } else {
+                  setDateTo("");
+                }
+              }}
               dateFormat="dd-MM-yyyy"
+              locale={ru}
               className="form-input"
             />
           </div>
