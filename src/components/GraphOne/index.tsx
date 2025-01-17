@@ -81,7 +81,7 @@ const GraphOne: React.FC<GraphOneProps> = ({
 
   const fetchData = async (): Promise<void> => {
     if (!organization || !dateFrom || !dateTo) {
-      alert("Please select a region, organization, and date range.");
+      alert("Пожалуйста, выберите регион, организацию и дату.");
       return;
     }
 
@@ -208,8 +208,7 @@ const GraphOne: React.FC<GraphOneProps> = ({
           <Bar data={graphData} />
         </div>
       ) : (
-        <p style={{ textAlign: "center" }}>
-          <br></br>
+        <p className="no-data-message">
           Пожалуйста, выберите параметры и обновите данные.
         </p>
       )}

@@ -32,6 +32,7 @@ const GraphTwo: React.FC<GraphTwoProps> = ({
 }) => {
   const [graphData, setGraphData] = useState<any>(null);
   const [isLoading, setIsLoading] = useState<boolean>(false);
+  const [errorMessage, setErrorMessage] = useState<string | null>(null);
 
   const fetchToken = async (): Promise<string | null> => {
     try {
@@ -48,23 +49,24 @@ const GraphTwo: React.FC<GraphTwoProps> = ({
       return response.data.access_token;
     } catch (error) {
       console.error("Error fetching token:", error);
+      setErrorMessage("Не удалось получить токен авторизации.");
       return null;
     }
   };
 
   const fetchData = async (): Promise<void> => {
     if (!organization || !dateFrom || !dateTo) {
-      alert("Please select a region, organization, and date range.");
+      alert("Пожалуйста, выберите регион, организацию и диапазон дат.");
       return;
     }
 
     const token = await fetchToken();
     if (!token) {
-      alert("Failed to fetch authorization token");
       return;
     }
 
     setIsLoading(true);
+    setErrorMessage(null);
 
     try {
       const response = await axios.get<ECGData[]>(
@@ -78,6 +80,7 @@ const GraphTwo: React.FC<GraphTwoProps> = ({
       processGraphData(response.data);
     } catch (error) {
       console.error("Error fetching ECG data:", error);
+      setErrorMessage("Ошибка при загрузке данных. Попробуйте позже.");
     } finally {
       setIsLoading(false);
     }
@@ -85,32 +88,42 @@ const GraphTwo: React.FC<GraphTwoProps> = ({
 
   const processGraphData = (data: ECGData[]): void => {
     const rhythmCounts: Record<string, number> = {
+      "AV блокада": 0,
+      "БНП": 0,
       "Синусовая брадикардия": 0,
       "Синусовая тахикардия": 0,
-      "AV блокада": 0,
-      CLC: 0,
-      Экстрасистолы: 0,
+      "ФП": 0,
+      "Экстрасистолы": 0,
+      "CLC": 0,
       "Синдром WPW": 0,
-    };
+      "LongQT": 0,
+      "Пароксизмальная ЖТ": 0,
+      "Пароксизмальная НЖТ": 0,
+    };    
 
     data.forEach((record) => {
       const { ecgDescription } = record;
 
-      if (ecgDescription.includes("Синусовая брадикардия")) rhythmCounts["Синусовая брадикардия"]++;
-      if (ecgDescription.includes("Синусовая тахикардия")) rhythmCounts["Синусовая тахикардия"]++;
-      if (ecgDescription.includes("AV блокада")) rhythmCounts["AV блокада"]++;
-      if (ecgDescription.includes("CLC")) rhythmCounts["CLC"]++;
-      if (ecgDescription.includes("Экстрасистолы")) rhythmCounts["Экстрасистолы"]++;
-      if (ecgDescription.includes("Синдром WPW")) rhythmCounts["Синдром WPW"]++;
+      Object.keys(rhythmCounts).forEach((condition) => {
+        if (ecgDescription.includes(condition)) {
+          rhythmCounts[condition]++;
+        }
+      });
     });
 
+    const totalCases = Object.values(rhythmCounts).reduce((sum, count) => sum + count, 0);
+    const labels = Object.keys(rhythmCounts);
+    const counts = Object.values(rhythmCounts);
+
     setGraphData({
-      labels: Object.keys(rhythmCounts),
+      labels: labels.map(
+        (label, index) => `${label} (${((counts[index] / totalCases) * 100).toFixed(1)}%)`
+      ),
       datasets: [
         {
           label: "Нарушения ритма сердца",
-          data: Object.values(rhythmCounts),
-          backgroundColor: "#1E88E5", // Blue color
+          data: counts,
+          backgroundColor: "#1E88E5",
         },
       ],
     });
@@ -165,6 +178,8 @@ const GraphTwo: React.FC<GraphTwoProps> = ({
           <div className="loading-spinner"></div>
           <p>Загрузка данных...</p>
         </div>
+      ) : errorMessage ? (
+        <p style={{ textAlign: "center", color: "red" }}>{errorMessage}</p>
       ) : graphData ? (
         <div className="graph-display">
           <Bar
@@ -193,8 +208,7 @@ const GraphTwo: React.FC<GraphTwoProps> = ({
           />
         </div>
       ) : (
-        <p style={{ textAlign: "center" }}>
-          <br></br>
+        <p className="no-data-message">
           Пожалуйста, выберите параметры и обновите данные.
         </p>
       )}

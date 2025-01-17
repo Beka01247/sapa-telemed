@@ -238,7 +238,7 @@ const RegionOrganizationSelector: React.FC<RegionOrganizationSelectorProps> = ({
   return (
     <div>
       <div>
-        <label htmlFor="region">Выберите регион:</label>
+        <label htmlFor="region">Выберите регион: </label>
         <select
           id="region"
           value={region || ""}
@@ -254,10 +254,10 @@ const RegionOrganizationSelector: React.FC<RegionOrganizationSelectorProps> = ({
           ))}
         </select>
       </div>
-
+      <br />
       {region && (
         <div>
-          <label htmlFor="organization">Выберите организацию:</label>
+          <label htmlFor="organization">Выберите организацию: </label>
           <select
             id="organization"
             value={organization}
