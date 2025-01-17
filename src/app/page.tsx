@@ -7,7 +7,7 @@ import GraphTwo from "@/components/GraphTwo";
 
 export default function Home() {
   const [activeComponent, setActiveComponent] = useState<number>(1);
-  const [region, setRegion] = useState<number | null>(null); // Shared state for region
+  const [region, setRegion] = useState<number | null>(null);
   const [organization, setOrganization] = useState<string>(""); // Shared state for organization
   const [dateFrom, setDateFrom] = useState<string>(""); // Shared state for start date
   const [dateTo, setDateTo] = useState<string>(""); // Shared state for end date
