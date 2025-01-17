@@ -91,11 +91,11 @@ const GraphThree: React.FC<GraphThreeProps> = ({
     };
 
     data.forEach((record) => {
-      const { ecgDescription } = record;
+      const ecgDescription = record.ecgDescription.toLowerCase(); 
 
-      if (ecgDescription.includes("I ст")) blockCounts["I ст"]++;
-      if (ecgDescription.includes("II ст")) blockCounts["II ст"]++;
-      if (ecgDescription.includes("III ст")) blockCounts["III ст"]++;
+    if (ecgDescription.includes("i ст")) blockCounts["I ст"]++;
+    if (ecgDescription.includes("ii ст")) blockCounts["II ст"]++;
+    if (ecgDescription.includes("iii ст")) blockCounts["III ст"]++;
     });
 
     setGraphData({

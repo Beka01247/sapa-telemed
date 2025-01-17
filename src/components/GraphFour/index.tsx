@@ -95,20 +95,19 @@ const GraphFour: React.FC<GraphFourProps> = ({
     };
 
     data.forEach((record) => {
-      const { ecgDescription } = record;
+      const ecgDescription = record.ecgDescription.toLowerCase();
 
-      // Count BLNPG
-      if (ecgDescription.includes("Полная блокада левой ножки пучка Гиса"))
+      if (ecgDescription.includes("полная блокада левой ножки пучка гиса"))
         blnpgCounts["ПБЛНПГ"]++;
-      if (ecgDescription.includes("Неполная блокада левой ножки пучка Гиса"))
+      if (ecgDescription.includes("неполная блокада левой ножки пучка гиса"))
         blnpgCounts["НБЛНПГ"]++;
-
-      // Count BRNPG
-      if (ecgDescription.includes("Полная блокада правой ножки пучка Гиса"))
+  
+      if (ecgDescription.includes("полная блокада правой ножки пучка гиса"))
         brnpgCounts["ПБПНПГ"]++;
-      if (ecgDescription.includes("Неполная блокада правой ножки пучка Гиса"))
+      if (ecgDescription.includes("неполная блокада правой ножки пучка гиса"))
         brnpgCounts["НБПНПГ"]++;
     });
+  
 
     const blnpgTotal = blnpgCounts["ПБЛНПГ"] + blnpgCounts["НБЛНПГ"];
     const brnpgTotal = brnpgCounts["ПБПНПГ"] + brnpgCounts["НБПНПГ"];

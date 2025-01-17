@@ -89,35 +89,40 @@ const GraphTwo: React.FC<GraphTwoProps> = ({
   const processGraphData = (data: ECGData[]): void => {
     const rhythmCounts: Record<string, number> = {
       "AV блокада": 0,
-      "БНП": 0,
+      БНП: 0,
       "Синусовая брадикардия": 0,
       "Синусовая тахикардия": 0,
-      "ФП": 0,
-      "Экстрасистолы": 0,
-      "CLC": 0,
+      ФП: 0,
+      Экстрасистолы: 0,
+      CLC: 0,
       "Синдром WPW": 0,
-      "LongQT": 0,
+      LongQT: 0,
       "Пароксизмальная ЖТ": 0,
       "Пароксизмальная НЖТ": 0,
-    };    
+    };
 
     data.forEach((record) => {
       const { ecgDescription } = record;
 
+      const description = ecgDescription.toLowerCase();
       Object.keys(rhythmCounts).forEach((condition) => {
-        if (ecgDescription.includes(condition)) {
+        if (description.includes(condition.toLowerCase())) {
           rhythmCounts[condition]++;
         }
       });
     });
 
-    const totalCases = Object.values(rhythmCounts).reduce((sum, count) => sum + count, 0);
+    const totalCases = Object.values(rhythmCounts).reduce(
+      (sum, count) => sum + count,
+      0
+    );
     const labels = Object.keys(rhythmCounts);
     const counts = Object.values(rhythmCounts);
 
     setGraphData({
       labels: labels.map(
-        (label, index) => `${label} (${((counts[index] / totalCases) * 100).toFixed(1)}%)`
+        (label, index) =>
+          `${label} (${((counts[index] / totalCases) * 100).toFixed(1)}%)`
       ),
       datasets: [
         {

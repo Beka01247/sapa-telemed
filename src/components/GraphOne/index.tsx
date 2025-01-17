@@ -43,8 +43,66 @@ const redConditions = [
   "Long QT",
 ];
 
-const greenConditions = [
-  "Ритм синусовый. ЧСС 78 уд/мин. Вольтаж достаточный. Нормальное положение электрической оси сердца.",
+const yellowConditions = [
+  "Синусовая брадикардия",
+  "Синусовая тахикардия",
+  "Синусовая аритмия",
+  "Фибрилляция (мерцание) предсердий",
+  "нормосистолическая форма",
+  "тахисистолическая форма",
+  "Трепетание предсердий, правильная форма",
+  "Трепетание предсердий, неправильная форма",
+  "Экстрасистолия наджелудочковая",
+  "Экстрасистолия желудочковая",
+  "единичные экстрасистолы",
+  "парные экстрасистолы",
+  "групповые экстрасистолы",
+  "вставочные экстрасистолы",
+  "аллоритмия",
+  "Политопная экстрасистолия",
+  "Пароксизмальная тахикардия наджелудочковая",
+  "Желудочковая тахикардия",
+  "Синдром Фридерика",
+  "Фибрилляция желудочков",
+  "Искусственный водитель ритма",
+  "Синоатриальная блокада неполная",
+  "Синоатриальная блокада полная",
+  "Атриовентрикулярная блокада 1-й степени",
+  "Атриовентрикулярная блокада 2-й степени",
+  "Атриовентрикулярная блокада 3-й степени (полная)",
+  "Неполная блокада правой ветви пучка Гиса",
+  "Полная блокада правой ветви пучка Гиса",
+  "Блокада левой ножки пучка Гиса",
+  "Блокада передней левой ветви пучка Гиса",
+  "Блокада задней левой ветви пучка Гиса",
+  "Синдром WPW",
+  "Синдром укороченного PQ",
+  "Ишемия миокарда",
+  "Повреждение миокарда",
+  "субэндокардиальное",
+  "трансмуральное",
+  "Инфаркт миокарда с зубцом Q",
+  "Инфаркт миокарда без зубца Q",
+  "острый период",
+  "подострый период",
+  "рубцовые изменения",
+  "очаговые изменения миокарда",
+  "Признаки хронической коронарной недостаточности",
+  "передне-перегородочная",
+  "передне-верхушечная",
+  "боковая",
+  "задне-нижняя",
+  "задне-базальная",
+  "Синдром ранней реполяризации желудочков",
+  "Синдром удлиненного Q-T",
+  "Диффузные изменения процессов реполяризации",
+  "Признаки дигиталисной интоксикации",
+  "Легочное сердце (SIQIII)",
+  "Гипертрофия правого предсердия",
+  "Гипертрофия левого предсердия",
+  "Гипертрофия правого желудочка",
+  "Гипертрофия левого желудочка",
+  "С нарушением процессов реполяризации",
 ];
 
 const GraphOne: React.FC<GraphOneProps> = ({
@@ -112,27 +170,33 @@ const GraphOne: React.FC<GraphOneProps> = ({
 
   const processGraphData = (data: ECGData[]): void => {
     const dateCounts: Record<string, { green: number; yellow: number; red: number }> = {};
-
+  
+    // Normalize conditions for case-insensitive matching
+    const redConditionsLower = redConditions.map((condition) => condition.toLowerCase());
+    const yellowConditionsLower = yellowConditions.map((condition) => condition.toLowerCase());
+  
     data.forEach((record) => {
       const date = record.ecgDate.split("T")[0];
+      const ecgDescriptionLower = record.ecgDescription.toLowerCase(); // Normalize description
+  
       if (!dateCounts[date]) {
         dateCounts[date] = { green: 0, yellow: 0, red: 0 };
       }
-
-      if (redConditions.some((condition) => record.ecgDescription.includes(condition))) {
+  
+      if (redConditionsLower.some((condition) => ecgDescriptionLower.includes(condition))) {
         dateCounts[date].red++;
-      } else if (greenConditions.some((condition) => record.ecgDescription.includes(condition))) {
-        dateCounts[date].green++;
-      } else {
+      } else if (yellowConditionsLower.some((condition) => ecgDescriptionLower.includes(condition))) {
         dateCounts[date].yellow++;
+      } else {
+        dateCounts[date].green++;
       }
     });
-
+  
     const labels = Object.keys(dateCounts);
     const greenData = labels.map((label) => dateCounts[label].green);
     const yellowData = labels.map((label) => dateCounts[label].yellow);
     const redData = labels.map((label) => dateCounts[label].red);
-
+  
     setGraphData({
       labels,
       datasets: [
@@ -154,6 +218,7 @@ const GraphOne: React.FC<GraphOneProps> = ({
       ],
     });
   };
+  
 
   return (
     <div className="graph-container">
