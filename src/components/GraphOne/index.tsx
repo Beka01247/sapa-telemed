@@ -157,7 +157,7 @@ const GraphOne: React.FC<GraphOneProps> = ({
 
   return (
     <div className="graph-container">
-      <h1 className="graph-title">График результатов ЭКГ</h1>
+      <h1 className="graph-title">Аналитика ЭКГ скрининга</h1>
       <form
         className="graph-form"
         onSubmit={(e) => {
