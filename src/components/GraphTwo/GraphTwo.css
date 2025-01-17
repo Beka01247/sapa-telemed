@@ -65,34 +65,12 @@
 
 .graph-display {
   margin-top: 30px;
-  height: 500px; /* Increase graph height */
+  height: 500px;
 }
 
 .graph-display canvas {
   max-width: 100% !important;
   height: auto !important;
-}
-
-select {
-  appearance: none; 
-  padding: 5px;
-  border: 1px solid #ccc;
-  border-radius: 6px;
-  background-color: #ffffff; /* Ensure white background */
-  font-size: 16px;
-  color: #333; /* Set text color */
-  cursor: pointer;
-}
-
-select:focus {
-  border-color: #0070f3;
-  outline: none;
-  box-shadow: 0 0 4px rgba(0, 112, 243, 0.5);
-}
-
-option {
-  background-color: #ffffff; /* White background for options */
-  color: #333;
 }
 
 .loading-spinner-container {

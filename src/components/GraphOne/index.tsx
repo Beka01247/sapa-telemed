@@ -1,23 +1,13 @@
-import React, { useState } from 'react';
-import axios from 'axios';
-import { Bar } from 'react-chartjs-2';
-import 'chart.js/auto';
-import './GraphOne.css';
-import RegionOrganizationSelector from '@/components/RegionOrganizationSelector';
+import React, { useState } from "react";
+import axios from "axios";
+import { Bar } from "react-chartjs-2";
+import "chart.js/auto";
+import "./GraphOne.css";
+import RegionOrganizationSelector from "@/components/RegionOrganizationSelector";
 
 interface ECGData {
   ecgDate: string;
-  bDate: string;
-  monitorSN: string;
-  fio: string;
-  sex: string;
-  iin: string;
   ecgDescription: string;
-  recordedBy: string;
-  recordedByOrg: string;
-  diagnosedBy: string;
-  diagnosedByOrg: string;
-  ecgLink: string;
 }
 
 interface GraphData {
@@ -27,6 +17,17 @@ interface GraphData {
     data: number[];
     backgroundColor: string;
   }[];
+}
+
+interface GraphOneProps {
+  region: number | null;
+  setRegion: (region: number | null) => void;
+  organization: string;
+  setOrganization: (organization: string) => void;
+  dateFrom: string;
+  setDateFrom: (date: string) => void;
+  dateTo: string;
+  setDateTo: (date: string) => void;
 }
 
 const redConditions = [
@@ -43,48 +44,58 @@ const redConditions = [
 ];
 
 const greenConditions = [
-  "Ритм синусовый. ЧСС 78 уд/мин. Вольтаж достаточный. Нормальное положение электрической оси сердца."
+  "Ритм синусовый. ЧСС 78 уд/мин. Вольтаж достаточный. Нормальное положение электрической оси сердца.",
 ];
 
-const GraphOne: React.FC = () => {
-  const [orgId, setOrgId] = useState<string>('');
-  const [dateFrom, setDateFrom] = useState<string>('');
-  const [dateTo, setDateTo] = useState<string>('');
+const GraphOne: React.FC<GraphOneProps> = ({
+  region,
+  setRegion,
+  organization,
+  setOrganization,
+  dateFrom,
+  setDateFrom,
+  dateTo,
+  setDateTo,
+}) => {
   const [graphData, setGraphData] = useState<GraphData | null>(null);
+  const [isLoading, setIsLoading] = useState<boolean>(false);
 
   const fetchToken = async (): Promise<string | null> => {
     try {
-      const config = {
-        method: 'post',
-        url: 'https://client.sapatelemed.kz/ecgList/token',
-        params: {
-          username: 'webStat',
-          password: 'QupiyaSozWebPageBirBir',
-        },
-        headers: {
-          'Content-Type': 'application/json',
-        },
-      };
-
-      const response = await axios(config);
-      console.log('Token Response:', response.data.access_token);
+      const response = await axios.post(
+        "https://client.sapatelemed.kz/ecgList/token",
+        null,
+        {
+          params: {
+            username: "webStat",
+            password: "QupiyaSozWebPageBirBir",
+          },
+        }
+      );
       return response.data.access_token;
-    } catch (error: any) {
-      console.error('Error fetching token:', error.response?.data || error.message);
+    } catch (error) {
+      console.error("Error fetching token:", error);
       return null;
     }
   };
 
   const fetchData = async (): Promise<void> => {
-    const token = await fetchToken();
-    if (!token) {
-      alert('Failed to fetch authorization token');
+    if (!organization || !dateFrom || !dateTo) {
+      alert("Please select a region, organization, and date range.");
       return;
     }
 
+    const token = await fetchToken();
+    if (!token) {
+      alert("Failed to fetch authorization token");
+      return;
+    }
+
+    setIsLoading(true);
+
     try {
       const response = await axios.get<ECGData[]>(
-        `https://client.sapatelemed.kz/ecgList/api/ECGResults/${orgId}/${dateFrom}/${dateTo}`,
+        `https://client.sapatelemed.kz/ecgList/api/ECGResults/${organization}/${dateFrom}/${dateTo}`,
         {
           headers: {
             Authorization: `Bearer ${token}`,
@@ -93,7 +104,9 @@ const GraphOne: React.FC = () => {
       );
       processGraphData(response.data);
     } catch (error) {
-      console.error('Error fetching ECG data:', error);
+      console.error("Error fetching ECG data:", error);
+    } finally {
+      setIsLoading(false);
     }
   };
 
@@ -101,7 +114,7 @@ const GraphOne: React.FC = () => {
     const dateCounts: Record<string, { green: number; yellow: number; red: number }> = {};
 
     data.forEach((record) => {
-      const date = record.ecgDate.split('T')[0];
+      const date = record.ecgDate.split("T")[0];
       if (!dateCounts[date]) {
         dateCounts[date] = { green: 0, yellow: 0, red: 0 };
       }
@@ -124,19 +137,19 @@ const GraphOne: React.FC = () => {
       labels,
       datasets: [
         {
-          label: 'Зеленый - В Норме',
+          label: "Зеленый - В Норме",
           data: greenData,
-          backgroundColor: '#4caf50',
+          backgroundColor: "#4caf50",
         },
         {
-          label: 'Желтый - Есть ослажнения',
+          label: "Желтый - Есть осложнения",
           data: yellowData,
-          backgroundColor: '#ffeb3b',
+          backgroundColor: "#ffeb3b",
         },
         {
-          label: 'Красный - Плохо',
+          label: "Красный - Плохо",
           data: redData,
-          backgroundColor: '#f44336',
+          backgroundColor: "#f44336",
         },
       ],
     });
@@ -144,7 +157,7 @@ const GraphOne: React.FC = () => {
 
   return (
     <div className="graph-container">
-      <h1 className="graph-title">График реузльтатов ЭКГ</h1>
+      <h1 className="graph-title">График результатов ЭКГ</h1>
       <form
         className="graph-form"
         onSubmit={(e) => {
@@ -153,7 +166,12 @@ const GraphOne: React.FC = () => {
         }}
       >
         <div className="form-group">
-          <RegionOrganizationSelector onOrganizationSelect={(id) => setOrgId(id)} />
+          <RegionOrganizationSelector
+            region={region}
+            setRegion={setRegion}
+            organization={organization}
+            setOrganization={setOrganization}
+          />
         </div>
         <div className="form-group">
           <label htmlFor="dateFrom">От (дата):</label>
@@ -175,13 +193,24 @@ const GraphOne: React.FC = () => {
             className="form-input"
           />
         </div>
-        <button type="submit" className="form-button">Результаты</button>
+        <button type="submit" className="form-button" disabled={isLoading}>
+          {isLoading ? "Загрузка..." : "Результаты"}
+        </button>
       </form>
 
-      {graphData && (
+      {isLoading ? (
+        <div className="loading-spinner-container">
+          <div className="loading-spinner"></div>
+          <p>Загрузка данных...</p>
+        </div>
+      ) : graphData ? (
         <div className="graph-display">
           <Bar data={graphData} />
         </div>
+      ) : (
+        <p style={{ textAlign: "center" }}>
+          Пожалуйста, выберите параметры и обновите данные.
+        </p>
       )}
     </div>
   );

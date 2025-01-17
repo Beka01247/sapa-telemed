@@ -3,33 +3,52 @@
 import React, { useState } from "react";
 import styles from "./page.module.css";
 import GraphOne from "@/components/GraphOne";
-
-const Component2 = () => <div>Component 2 Content</div>;
-const Component3 = () => <div>Component 3 Content</div>;
-const Component4 = () => <div>Component 4 Content</div>;
+import GraphTwo from "@/components/GraphTwo";
 
 export default function Home() {
   const [activeComponent, setActiveComponent] = useState<number>(1);
+  const [region, setRegion] = useState<number | null>(null); // Shared state for region
+  const [organization, setOrganization] = useState<string>(""); // Shared state for organization
+  const [dateFrom, setDateFrom] = useState<string>(""); // Shared state for start date
+  const [dateTo, setDateTo] = useState<string>(""); // Shared state for end date
 
   const renderComponent = () => {
     switch (activeComponent) {
       case 1:
-        return <GraphOne />;
+        return (
+          <GraphOne
+            region={region}
+            setRegion={setRegion}
+            organization={organization}
+            setOrganization={setOrganization}
+            dateFrom={dateFrom}
+            setDateFrom={setDateFrom}
+            dateTo={dateTo}
+            setDateTo={setDateTo}
+          />
+        );
       case 2:
-        return <Component2 />;
-      case 3:
-        return <Component3 />;
-      case 4:
-        return <Component4 />;
+        return (
+          <GraphTwo
+            region={region}
+            setRegion={setRegion}
+            organization={organization}
+            setOrganization={setOrganization}
+            dateFrom={dateFrom}
+            setDateFrom={setDateFrom}
+            dateTo={dateTo}
+            setDateTo={setDateTo}
+          />
+        );
       default:
-        return <GraphOne />;
+        return null;
     }
   };
 
   return (
     <div className={styles.container}>
       <h1 className={styles.title}>Результаты телеметрии Sapa Telemed</h1>
-      
+
       <div className={styles.switcher}>
         <button
           className={`${styles.button} ${
@@ -45,27 +64,10 @@ export default function Home() {
           }`}
           onClick={() => setActiveComponent(2)}
         >
-          Component 2
-        </button>
-        <button
-          className={`${styles.button} ${
-            activeComponent === 3 ? styles.activeButton : ""
-          }`}
-          onClick={() => setActiveComponent(3)}
-        >
-          Component 3
-        </button>
-        <button
-          className={`${styles.button} ${
-            activeComponent === 4 ? styles.activeButton : ""
-          }`}
-          onClick={() => setActiveComponent(4)}
-        >
-          Component 4
+          Нарушения ритма сердца
         </button>
       </div>
 
-      {/* Render Active Component */}
       <div className={styles.componentContainer}>{renderComponent()}</div>
     </div>
   );

@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React from "react";
 
 interface Region {
   id: number;
@@ -12,56 +12,60 @@ interface Organization {
 }
 
 const regions: Region[] = [
-  { id: 1, region_name: 'АКМОЛИНСКАЯ ОБЛАСТЬ' },
-  { id: 2, region_name: 'АКТЮБИНСКАЯ ОБЛАСТЬ' },
-  { id: 3, region_name: 'АЛМАТИНСКАЯ ОБЛАСТЬ' },
-  { id: 16, region_name: 'АСТАНА' },
+  { id: 1, region_name: "АКМОЛИНСКАЯ ОБЛАСТЬ" },
+  { id: 2, region_name: "АКТЮБИНСКАЯ ОБЛАСТЬ" },
+  { id: 3, region_name: "АЛМАТИНСКАЯ ОБЛАСТЬ" },
+  { id: 16, region_name: "АСТАНА" },
   // Add the rest of the regions here...
 ];
 
 const organizations: Organization[] = [
-  { site_name: 'AKT01', commercial_name: 'ГКП "Айтекебийская РБ" на ПХВ ГУ УЗ Актюбинской области', region_id: 2 },
-  { site_name: 'AKT02', commercial_name: 'ГКП "Каргалинская РБ" на ПХВ ГУ УЗ Актюбинской области', region_id: 2 },
-  { site_name: 'AL01', commercial_name: 'ГКП на ПХВ "Городская многопрофильная больница города Қонаев"', region_id: 3 },
-  { site_name: 'AST01', commercial_name: 'ТОО "ЦЕНТР СЕМЕЙНОГО ЗДОРОВЬЯ И СЧАСТЬЯ "ОНЕГЕ"', region_id: 16 },
+  { site_name: "AKT01", commercial_name: "ГКП \"Айтекебийская РБ\"", region_id: 2 },
+  { site_name: "AKT02", commercial_name: "ГКП \"Каргалинская РБ\"", region_id: 2 },
+  { site_name: "AL01", commercial_name: "ГКП \"Городская многопрофильная больница\"", region_id: 3 },
+  { site_name: "AST01", commercial_name: "ТОО \"ЦЕНТР СЕМЕЙНОГО ЗДОРОВЬЯ\"", region_id: 16 },
   { site_name: 'ASTGP9', commercial_name: 'ГКП на ПХВ "Городская поликлиника №9" акимата города Астана', region_id: 16 },
   // Add the rest of the organizations here...
 ];
 
 interface RegionOrganizationSelectorProps {
-  onOrganizationSelect: (orgId: string) => void;
+  region: number | null;
+  setRegion: (region: number | null) => void;
+  organization: string;
+  setOrganization: (organization: string) => void;
 }
 
-const RegionOrganizationSelector: React.FC<RegionOrganizationSelectorProps> = ({ onOrganizationSelect }) => {
-  const [selectedRegion, setSelectedRegion] = useState<number | null>(null);
-  const [selectedOrganization, setSelectedOrganization] = useState<string | null>(null);
-
+const RegionOrganizationSelector: React.FC<RegionOrganizationSelectorProps> = ({
+  region,
+  setRegion,
+  organization,
+  setOrganization,
+}) => {
   const filteredOrganizations = organizations.filter(
-    (org) => org.region_id === selectedRegion
+    (org) => org.region_id === region
   );
 
   const handleRegionChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
     const regionId = parseInt(e.target.value, 10);
-    setSelectedRegion(regionId);
-    setSelectedOrganization(null); // Reset organization selection
+    setRegion(regionId);
+    setOrganization(""); // Reset organization when the region changes
   };
 
   const handleOrganizationChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
-    setSelectedOrganization(e.target.value);
-    onOrganizationSelect(e.target.value);
+    setOrganization(e.target.value);
   };
 
   return (
     <div>
       <div>
-        <label htmlFor="region">Выберите область: </label>
+        <label htmlFor="region">Выберите регион:</label>
         <select
           id="region"
-          value={selectedRegion || ''}
+          value={region || ""}
           onChange={handleRegionChange}
         >
           <option value="" disabled>
-            -- Регион --
+            -- Выберите регион --
           </option>
           {regions.map((region) => (
             <option key={region.id} value={region.id}>
@@ -71,16 +75,16 @@ const RegionOrganizationSelector: React.FC<RegionOrganizationSelectorProps> = ({
         </select>
       </div>
 
-      {selectedRegion && (
+      {region && (
         <div>
-          <label htmlFor="organization">Выберите Организацию: </label>
+          <label htmlFor="organization">Выберите организацию:</label>
           <select
             id="organization"
-            value={selectedOrganization || ''}
+            value={organization}
             onChange={handleOrganizationChange}
           >
             <option value="" disabled>
-              -- Организация --
+              -- Выберите организацию --
             </option>
             {filteredOrganizations.map((org) => (
               <option key={org.site_name} value={org.site_name}>
