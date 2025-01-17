@@ -4,6 +4,8 @@ import { Bar } from "react-chartjs-2";
 import "chart.js/auto";
 import RegionOrganizationSelector from "@/components/RegionOrganizationSelector";
 import "./GraphTwo.css";
+import DatePicker from "react-datepicker";
+import "react-datepicker/dist/react-datepicker.css";
 
 interface ECGData {
   ecgDescription: string;
@@ -153,25 +155,29 @@ const GraphTwo: React.FC<GraphTwoProps> = ({
             setOrganization={setOrganization}
           />
         </div>
-        <div className="form-group">
-          <label htmlFor="dateFrom">От (дата):</label>
-          <input
-            type="date"
-            id="dateFrom"
-            value={dateFrom}
-            onChange={(e) => setDateFrom(e.target.value)}
-            className="form-input"
-          />
-        </div>
-        <div className="form-group">
-          <label htmlFor="dateTo">До (дата):</label>
-          <input
-            type="date"
-            id="dateTo"
-            value={dateTo}
-            onChange={(e) => setDateTo(e.target.value)}
-            className="form-input"
-          />
+        <div className="form-group-inline">
+          <div className="form-group">
+            <label htmlFor="dateFrom">От (дата):</label>
+            <DatePicker
+              selected={dateFrom ? new Date(dateFrom) : null}
+              onChange={(date: Date | null) =>
+                setDateFrom(date ? date.toISOString().split("T")[0] : "")
+              }
+              dateFormat="dd-MM-yyyy"
+              className="form-input"
+            />
+          </div>
+          <div className="form-group">
+            <label htmlFor="dateTo">До (дата):</label>
+            <DatePicker
+              selected={dateTo ? new Date(dateTo) : null}
+              onChange={(date: Date | null) =>
+                setDateTo(date ? date.toISOString().split("T")[0] : "")
+              }
+              dateFormat="dd-MM-yyyy"
+              className="form-input"
+            />
+          </div>
         </div>
         <button type="submit" className="form-button" disabled={isLoading}>
           {isLoading ? "Загрузка..." : "Обновить данные"}

@@ -4,6 +4,8 @@ import { Bar } from "react-chartjs-2";
 import "chart.js/auto";
 import "./GraphOne.css";
 import RegionOrganizationSelector from "@/components/RegionOrganizationSelector";
+import DatePicker from "react-datepicker";
+import "react-datepicker/dist/react-datepicker.css";
 
 interface ECGData {
   ecgDate: string;
@@ -169,34 +171,49 @@ const GraphOne: React.FC<GraphOneProps> = ({
   };
 
   const processGraphData = (data: ECGData[]): void => {
-    const dateCounts: Record<string, { green: number; yellow: number; red: number }> = {};
-  
+    const dateCounts: Record<
+      string,
+      { green: number; yellow: number; red: number }
+    > = {};
+
     // Normalize conditions for case-insensitive matching
-    const redConditionsLower = redConditions.map((condition) => condition.toLowerCase());
-    const yellowConditionsLower = yellowConditions.map((condition) => condition.toLowerCase());
-  
+    const redConditionsLower = redConditions.map((condition) =>
+      condition.toLowerCase()
+    );
+    const yellowConditionsLower = yellowConditions.map((condition) =>
+      condition.toLowerCase()
+    );
+
     data.forEach((record) => {
       const date = record.ecgDate.split("T")[0];
       const ecgDescriptionLower = record.ecgDescription.toLowerCase(); // Normalize description
-  
+
       if (!dateCounts[date]) {
         dateCounts[date] = { green: 0, yellow: 0, red: 0 };
       }
-  
-      if (redConditionsLower.some((condition) => ecgDescriptionLower.includes(condition))) {
+
+      if (
+        redConditionsLower.some((condition) =>
+          ecgDescriptionLower.includes(condition)
+        )
+      ) {
         dateCounts[date].red++;
-      } else if (yellowConditionsLower.some((condition) => ecgDescriptionLower.includes(condition))) {
+      } else if (
+        yellowConditionsLower.some((condition) =>
+          ecgDescriptionLower.includes(condition)
+        )
+      ) {
         dateCounts[date].yellow++;
       } else {
         dateCounts[date].green++;
       }
     });
-  
+
     const labels = Object.keys(dateCounts);
     const greenData = labels.map((label) => dateCounts[label].green);
     const yellowData = labels.map((label) => dateCounts[label].yellow);
     const redData = labels.map((label) => dateCounts[label].red);
-  
+
     setGraphData({
       labels,
       datasets: [
@@ -218,7 +235,6 @@ const GraphOne: React.FC<GraphOneProps> = ({
       ],
     });
   };
-  
 
   return (
     <div className="graph-container">
@@ -238,26 +254,31 @@ const GraphOne: React.FC<GraphOneProps> = ({
             setOrganization={setOrganization}
           />
         </div>
-        <div className="form-group">
-          <label htmlFor="dateFrom">От (дата):</label>
-          <input
-            type="date"
-            id="dateFrom"
-            value={dateFrom}
-            onChange={(e) => setDateFrom(e.target.value)}
-            className="form-input"
-          />
+        <div className="form-group-inline">
+          <div className="form-group">
+            <label htmlFor="dateFrom">От (дата):</label>
+            <DatePicker
+              selected={dateFrom ? new Date(dateFrom) : null}
+              onChange={(date: Date | null) =>
+                setDateFrom(date ? date.toISOString().split("T")[0] : "")
+              }
+              dateFormat="dd-MM-yyyy"
+              className="form-input"
+            />
+          </div>
+          <div className="form-group">
+            <label htmlFor="dateTo">До (дата):</label>
+            <DatePicker
+              selected={dateTo ? new Date(dateTo) : null}
+              onChange={(date: Date | null) =>
+                setDateTo(date ? date.toISOString().split("T")[0] : "")
+              }
+              dateFormat="dd-MM-yyyy"
+              className="form-input"
+            />
+          </div>
         </div>
-        <div className="form-group">
-          <label htmlFor="dateTo">До (дата):</label>
-          <input
-            type="date"
-            id="dateTo"
-            value={dateTo}
-            onChange={(e) => setDateTo(e.target.value)}
-            className="form-input"
-          />
-        </div>
+
         <button type="submit" className="form-button" disabled={isLoading}>
           {isLoading ? "Загрузка..." : "Результаты"}
         </button>

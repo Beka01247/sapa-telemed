@@ -129,3 +129,16 @@
   font-weight: bold;
   margin-top: 20px;
 }
+
+
+.form-group-inline {
+  display: flex;
+  gap: 20px; 
+  align-items: center; 
+  justify-content: center;
+}
+
+.form-group {
+  display: flex;
+  flex-direction: column; 
+}

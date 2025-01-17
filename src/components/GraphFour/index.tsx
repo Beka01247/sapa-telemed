@@ -4,6 +4,8 @@ import { Doughnut } from "react-chartjs-2";
 import "chart.js/auto";
 import RegionOrganizationSelector from "@/components/RegionOrganizationSelector";
 import "./GraphFour.css";
+import DatePicker from "react-datepicker";
+import "react-datepicker/dist/react-datepicker.css";
 
 interface ECGData {
   ecgDescription: string;
@@ -101,13 +103,12 @@ const GraphFour: React.FC<GraphFourProps> = ({
         blnpgCounts["ПБЛНПГ"]++;
       if (ecgDescription.includes("неполная блокада левой ножки пучка гиса"))
         blnpgCounts["НБЛНПГ"]++;
-  
+
       if (ecgDescription.includes("полная блокада правой ножки пучка гиса"))
         brnpgCounts["ПБПНПГ"]++;
       if (ecgDescription.includes("неполная блокада правой ножки пучка гиса"))
         brnpgCounts["НБПНПГ"]++;
     });
-  
 
     const blnpgTotal = blnpgCounts["ПБЛНПГ"] + blnpgCounts["НБЛНПГ"];
     const brnpgTotal = brnpgCounts["ПБПНПГ"] + brnpgCounts["НБПНПГ"];
@@ -157,25 +158,29 @@ const GraphFour: React.FC<GraphFourProps> = ({
             setOrganization={setOrganization}
           />
         </div>
-        <div className="form-group">
-          <label htmlFor="dateFrom">От (дата):</label>
-          <input
-            type="date"
-            id="dateFrom"
-            value={dateFrom}
-            onChange={(e) => setDateFrom(e.target.value)}
-            className="form-input"
-          />
-        </div>
-        <div className="form-group">
-          <label htmlFor="dateTo">До (дата):</label>
-          <input
-            type="date"
-            id="dateTo"
-            value={dateTo}
-            onChange={(e) => setDateTo(e.target.value)}
-            className="form-input"
-          />
+        <div className="form-group-inline">
+          <div className="form-group">
+            <label htmlFor="dateFrom">От (дата):</label>
+            <DatePicker
+              selected={dateFrom ? new Date(dateFrom) : null}
+              onChange={(date: Date | null) =>
+                setDateFrom(date ? date.toISOString().split("T")[0] : "")
+              }
+              dateFormat="dd-MM-yyyy"
+              className="form-input"
+            />
+          </div>
+          <div className="form-group">
+            <label htmlFor="dateTo">До (дата):</label>
+            <DatePicker
+              selected={dateTo ? new Date(dateTo) : null}
+              onChange={(date: Date | null) =>
+                setDateTo(date ? date.toISOString().split("T")[0] : "")
+              }
+              dateFormat="dd-MM-yyyy"
+              className="form-input"
+            />
+          </div>
         </div>
         <button type="submit" className="form-button" disabled={isLoading}>
           {isLoading ? "Загрузка..." : "Обновить данные"}
