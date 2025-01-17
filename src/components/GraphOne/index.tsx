@@ -2,6 +2,8 @@ import React, { useState } from 'react';
 import axios from 'axios';
 import { Bar } from 'react-chartjs-2';
 import 'chart.js/auto';
+import './GraphOne.css';
+import RegionOrganizationSelector from '@/components/RegionOrganizationSelector';
 
 interface ECGData {
   ecgDate: string;
@@ -27,6 +29,23 @@ interface GraphData {
   }[];
 }
 
+const redConditions = [
+  "Брадиаритмии",
+  "Синдром слабости синусового узла (остановка синусового узла)",
+  "AV-блокада 2-й степени типа Мобитц",
+  "Полная AV-блокада",
+  "Тахиаритмии",
+  "Пароксизмальная желудочковая тахикардия",
+  "ЖТ типа «пируэт» torsades de pointes",
+  "Желудочковые экстрасистолы (плитопные ЖЭС, ранние ЖЭС по типу R на Т)",
+  "Синдром бругада",
+  "Long QT",
+];
+
+const greenConditions = [
+  "Ритм синусовый. ЧСС 78 уд/мин. Вольтаж достаточный. Нормальное положение электрической оси сердца."
+];
+
 const GraphOne: React.FC = () => {
   const [orgId, setOrgId] = useState<string>('');
   const [dateFrom, setDateFrom] = useState<string>('');
@@ -46,7 +65,7 @@ const GraphOne: React.FC = () => {
           'Content-Type': 'application/json',
         },
       };
-  
+
       const response = await axios(config);
       console.log('Token Response:', response.data.access_token);
       return response.data.access_token;
@@ -55,16 +74,12 @@ const GraphOne: React.FC = () => {
       return null;
     }
   };
-  
 
   const fetchData = async (): Promise<void> => {
     const token = await fetchToken();
     if (!token) {
       alert('Failed to fetch authorization token');
       return;
-    }
-    else {
-      console.log("i have token: ", token)
     }
 
     try {
@@ -91,13 +106,12 @@ const GraphOne: React.FC = () => {
         dateCounts[date] = { green: 0, yellow: 0, red: 0 };
       }
 
-      // Example logic for categorizing data into colors
-      if (record.ecgDescription === 'OK') {
-        dateCounts[date].green++;
-      } else if (record.ecgDescription === 'Not So Good') {
-        dateCounts[date].yellow++;
-      } else {
+      if (redConditions.some((condition) => record.ecgDescription.includes(condition))) {
         dateCounts[date].red++;
+      } else if (greenConditions.some((condition) => record.ecgDescription.includes(condition))) {
+        dateCounts[date].green++;
+      } else {
+        dateCounts[date].yellow++;
       }
     });
 
@@ -110,65 +124,62 @@ const GraphOne: React.FC = () => {
       labels,
       datasets: [
         {
-          label: 'Green - OK',
+          label: 'Зеленый - В Норме',
           data: greenData,
-          backgroundColor: 'green',
+          backgroundColor: '#4caf50',
         },
         {
-          label: 'Yellow - Not So Good',
+          label: 'Желтый - Есть ослажнения',
           data: yellowData,
-          backgroundColor: 'yellow',
+          backgroundColor: '#ffeb3b',
         },
         {
-          label: 'Red - Not OK',
+          label: 'Красный - Плохо',
           data: redData,
-          backgroundColor: 'red',
+          backgroundColor: '#f44336',
         },
       ],
     });
   };
 
   return (
-    <div>
-      <h1>Graph One</h1>
+    <div className="graph-container">
+      <h1 className="graph-title">График реузльтатов ЭКГ</h1>
       <form
+        className="graph-form"
         onSubmit={(e) => {
           e.preventDefault();
           fetchData();
         }}
       >
-        <div>
-          <label htmlFor="orgId">Organization ID:</label>
-          <input
-            type="text"
-            id="orgId"
-            value={orgId}
-            onChange={(e) => setOrgId(e.target.value)}
-          />
+        <div className="form-group">
+          <RegionOrganizationSelector onOrganizationSelect={(id) => setOrgId(id)} />
         </div>
-        <div>
-          <label htmlFor="dateFrom">Date From:</label>
+        <div className="form-group">
+          <label htmlFor="dateFrom">От (дата):</label>
           <input
             type="date"
             id="dateFrom"
             value={dateFrom}
             onChange={(e) => setDateFrom(e.target.value)}
+            className="form-input"
           />
         </div>
-        <div>
-          <label htmlFor="dateTo">Date To:</label>
+        <div className="form-group">
+          <label htmlFor="dateTo">До (дата):</label>
           <input
             type="date"
             id="dateTo"
             value={dateTo}
             onChange={(e) => setDateTo(e.target.value)}
+            className="form-input"
           />
         </div>
-        <button type="submit">Submit</button>
+        <button type="submit" className="form-button">Результаты</button>
       </form>
 
       {graphData && (
-        <div style={{ width: '80%', margin: '0 auto' }}>
+        <div className="graph-display">
           <Bar data={graphData} />
         </div>
       )}

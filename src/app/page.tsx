@@ -1,4 +1,4 @@
-"use client"
+"use client";
 
 import React, { useState } from "react";
 import styles from "./page.module.css";
@@ -28,12 +28,41 @@ export default function Home() {
 
   return (
     <div className={styles.container}>
-      {/* Switcher Buttons */}
+      <h1 className={styles.title}>Результаты телеметрии Sapa Telemed</h1>
+      
       <div className={styles.switcher}>
-        <button onClick={() => setActiveComponent(1)}>Component 1</button>
-        <button onClick={() => setActiveComponent(2)}>Component 2</button>
-        <button onClick={() => setActiveComponent(3)}>Component 3</button>
-        <button onClick={() => setActiveComponent(4)}>Component 4</button>
+        <button
+          className={`${styles.button} ${
+            activeComponent === 1 ? styles.activeButton : ""
+          }`}
+          onClick={() => setActiveComponent(1)}
+        >
+          Общие результаты пациентов
+        </button>
+        <button
+          className={`${styles.button} ${
+            activeComponent === 2 ? styles.activeButton : ""
+          }`}
+          onClick={() => setActiveComponent(2)}
+        >
+          Component 2
+        </button>
+        <button
+          className={`${styles.button} ${
+            activeComponent === 3 ? styles.activeButton : ""
+          }`}
+          onClick={() => setActiveComponent(3)}
+        >
+          Component 3
+        </button>
+        <button
+          className={`${styles.button} ${
+            activeComponent === 4 ? styles.activeButton : ""
+          }`}
+          onClick={() => setActiveComponent(4)}
+        >
+          Component 4
+        </button>
       </div>
 
       {/* Render Active Component */}
