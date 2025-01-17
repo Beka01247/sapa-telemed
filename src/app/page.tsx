@@ -9,7 +9,7 @@ export default function Home() {
   const [activeComponent, setActiveComponent] = useState<number>(1);
   const [region, setRegion] = useState<number | null>(null);
   const [organization, setOrganization] = useState<string>(""); 
-  const [dateFrom, setDateFrom] = useState<string>(""); // Shared state for start date
+  const [dateFrom, setDateFrom] = useState<string>(""); 
   const [dateTo, setDateTo] = useState<string>(""); // Shared state for end date
 
   const renderComponent = () => {
