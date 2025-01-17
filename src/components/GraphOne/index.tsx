@@ -209,6 +209,7 @@ const GraphOne: React.FC<GraphOneProps> = ({
         </div>
       ) : (
         <p style={{ textAlign: "center" }}>
+          <br></br>
           Пожалуйста, выберите параметры и обновите данные.
         </p>
       )}
