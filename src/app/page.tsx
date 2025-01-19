@@ -12,6 +12,7 @@ import GraphOne from "@/components/GraphOne";
 import GraphTwo from "@/components/GraphTwo";
 import GraphThree from "@/components/GraphThree";
 import GraphFour from "@/components/GraphFour";
+import PatientDetailsList from "@/components/PatientDetailsList";
 
 interface ECGData {
   ecgDate: string;
@@ -188,6 +189,12 @@ export default function Home() {
           <div className={styles.graphCard}>
             <GraphFour ecgData={ecgData} />
           </div>
+        </div>
+      )}
+
+      {ecgData && !isLoading && (
+        <div className={styles.patientListWrapper}>
+          <PatientDetailsList ecgData={ecgData} />
         </div>
       )}
 
