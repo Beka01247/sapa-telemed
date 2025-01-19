@@ -1,95 +1,25 @@
-import React, { useState } from "react";
-import axios from "axios";
+import React, { useState, useEffect } from "react";
 import { Bar } from "react-chartjs-2";
 import "chart.js/auto";
-import RegionOrganizationSelector from "@/components/RegionOrganizationSelector";
 import "./GraphThree.css";
-import DatePicker from "react-datepicker";
-import "react-datepicker/dist/react-datepicker.css";
-import { ru } from "date-fns/locale";
 
 interface ECGData {
   ecgDescription: string;
 }
 
 interface GraphThreeProps {
-  region: number | null;
-  setRegion: (region: number | null) => void;
-  organization: string;
-  setOrganization: (organization: string) => void;
-  dateFrom: string;
-  setDateFrom: (date: string) => void;
-  dateTo: string;
-  setDateTo: (date: string) => void;
+  ecgData: ECGData[];
 }
 
-const GraphThree: React.FC<GraphThreeProps> = ({
-  region,
-  setRegion,
-  organization,
-  setOrganization,
-  dateFrom,
-  setDateFrom,
-  dateTo,
-  setDateTo,
-}) => {
+const GraphThree: React.FC<GraphThreeProps> = ({ ecgData }) => {
   const [graphData, setGraphData] = useState<any>(null);
-  const [isLoading, setIsLoading] = useState<boolean>(false);
 
-  const fetchToken = async (): Promise<string | null> => {
-    try {
-      const response = await axios.post(
-        "https://client.sapatelemed.kz/ecgList/token",
-        null,
-        {
-          params: {
-            username: "webStat",
-            password: "QupiyaSozWebPageBirBir",
-          },
-        }
-      );
-      return response.data.access_token;
-    } catch (error) {
-      console.error("Error fetching token:", error);
-      return null;
-    }
-  };
+  useEffect(() => {
+    if (!ecgData) return;
+    processGraphData(ecgData);
+  }, [ecgData]);
 
-  const fetchData = async (): Promise<void> => {
-    if (!organization || !dateFrom || !dateTo) {
-      alert("Пожалуйста, выберите регион, организацию и дату.");
-      return;
-    }
-
-    const formattedDateFrom = dateFrom.split("-").reverse().join("-");
-    const formattedDateTo = dateTo.split("-").reverse().join("-");
-
-    const token = await fetchToken();
-    if (!token) {
-      alert("Failed to fetch authorization token");
-      return;
-    }
-
-    setIsLoading(true);
-
-    try {
-      const response = await axios.get<ECGData[]>(
-        `https://client.sapatelemed.kz/ecgList/api/ECGResults/${organization}/${formattedDateFrom}/${formattedDateTo}`,
-        {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        }
-      );
-      processGraphData(response.data);
-    } catch (error) {
-      console.error("Error fetching ECG data:", error);
-    } finally {
-      setIsLoading(false);
-    }
-  };
-
-  const processGraphData = (data: ECGData[]): void => {
+  const processGraphData = (data: ECGData[]) => {
     const blockCounts: Record<string, number> = {
       "I ст": 0,
       "II ст": 0,
@@ -97,11 +27,10 @@ const GraphThree: React.FC<GraphThreeProps> = ({
     };
 
     data.forEach((record) => {
-      const ecgDescription = record.ecgDescription.toLowerCase();
-
-      if (ecgDescription.includes("i ст")) blockCounts["I ст"]++;
-      if (ecgDescription.includes("ii ст")) blockCounts["II ст"]++;
-      if (ecgDescription.includes("iii ст")) blockCounts["III ст"]++;
+      const desc = record.ecgDescription.toLowerCase();
+      if (desc.includes("i ст")) blockCounts["I ст"]++;
+      if (desc.includes("ii ст")) blockCounts["II ст"]++;
+      if (desc.includes("iii ст")) blockCounts["III ст"]++;
     });
 
     setGraphData({
@@ -110,7 +39,7 @@ const GraphThree: React.FC<GraphThreeProps> = ({
         {
           label: "Атриовентрикулярная блокада",
           data: Object.values(blockCounts),
-          backgroundColor: "#9C27B0", // Purple color
+          backgroundColor: "#9C27B0", // Purple
         },
       ],
     });
@@ -118,84 +47,13 @@ const GraphThree: React.FC<GraphThreeProps> = ({
 
   return (
     <div className="graph-container">
-      <h1 className="graph-title">Атриовентрикулярная блокада</h1>
+      <h2 className="graph-title">АВ-блокада (GraphThree)</h2>
 
-      <form
-        className="graph-form"
-        onSubmit={(e) => {
-          e.preventDefault();
-          fetchData();
-        }}
-      >
-        <div className="form-group">
-          <RegionOrganizationSelector
-            region={region}
-            setRegion={setRegion}
-            organization={organization}
-            setOrganization={setOrganization}
-          />
-        </div>
-        <div className="form-group-inline">
-          <div className="form-group">
-            <label htmlFor="dateFrom">От (дата):</label>
-            <DatePicker
-              selected={
-                dateFrom
-                  ? new Date(dateFrom.split("-").reverse().join("-"))
-                  : null
-              } // Correctly use dateFrom
-              onChange={(date: Date | null) => {
-                if (date) {
-                  const day = date.getDate().toString().padStart(2, "0");
-                  const month = (date.getMonth() + 1)
-                    .toString()
-                    .padStart(2, "0");
-                  const year = date.getFullYear();
-                  setDateFrom(`${day}-${month}-${year}`);
-                } else {
-                  setDateFrom("");
-                }
-              }}
-              dateFormat="dd-MM-yyyy"
-              locale={ru}
-              className="form-input"
-            />
-          </div>
-          <div className="form-group">
-            <label htmlFor="dateTo">До (дата):</label>
-            <DatePicker
-              selected={
-                dateTo ? new Date(dateTo.split("-").reverse().join("-")) : null
-              } // Correctly use dateTo
-              onChange={(date: Date | null) => {
-                if (date) {
-                  const day = date.getDate().toString().padStart(2, "0");
-                  const month = (date.getMonth() + 1)
-                    .toString()
-                    .padStart(2, "0");
-                  const year = date.getFullYear();
-                  setDateTo(`${day}-${month}-${year}`);
-                } else {
-                  setDateTo("");
-                }
-              }}
-              dateFormat="dd-MM-yyyy"
-              locale={ru}
-              className="form-input"
-            />
-          </div>
-        </div>
-        <button type="submit" className="form-button" disabled={isLoading}>
-          {isLoading ? "Загрузка..." : "Обновить данные"}
-        </button>
-      </form>
-
-      {isLoading ? (
-        <div className="loading-spinner-container">
-          <div className="loading-spinner"></div>
-          <p>Загрузка данных...</p>
-        </div>
-      ) : graphData ? (
+      {!ecgData.length ? (
+        <p>Нет данных для отображения.</p>
+      ) : !graphData ? (
+        <p>Обработка данных...</p>
+      ) : (
         <div className="graph-display">
           <Bar
             data={graphData}
@@ -222,10 +80,6 @@ const GraphThree: React.FC<GraphThreeProps> = ({
             }}
           />
         </div>
-      ) : (
-        <p className="no-data-message">
-          Пожалуйста, выберите параметры и обновите данные.
-        </p>
       )}
     </div>
   );

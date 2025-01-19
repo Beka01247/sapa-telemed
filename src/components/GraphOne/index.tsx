@@ -1,12 +1,7 @@
-import React, { useState } from "react";
-import axios from "axios";
+import React, { useState, useEffect } from "react";
 import { Bar } from "react-chartjs-2";
 import "chart.js/auto";
 import "./GraphOne.css";
-import RegionOrganizationSelector from "@/components/RegionOrganizationSelector";
-import DatePicker from "react-datepicker";
-import "react-datepicker/dist/react-datepicker.css";
-import { ru } from "date-fns/locale";
 
 interface ECGData {
   ecgDate: string;
@@ -23,14 +18,7 @@ interface GraphData {
 }
 
 interface GraphOneProps {
-  region: number | null;
-  setRegion: (region: number | null) => void;
-  organization: string;
-  setOrganization: (organization: string) => void;
-  dateFrom: string;
-  setDateFrom: (date: string) => void;
-  dateTo: string;
-  setDateTo: (date: string) => void;
+  ecgData: ECGData[]; // Received from parent
 }
 
 const redConditions = [
@@ -108,105 +96,33 @@ const yellowConditions = [
   "С нарушением процессов реполяризации",
 ];
 
-const GraphOne: React.FC<GraphOneProps> = ({
-  region,
-  setRegion,
-  organization,
-  setOrganization,
-  dateFrom,
-  setDateFrom,
-  dateTo,
-  setDateTo,
-}) => {
+const GraphOne: React.FC<GraphOneProps> = ({ ecgData }) => {
   const [graphData, setGraphData] = useState<GraphData | null>(null);
-  const [isLoading, setIsLoading] = useState<boolean>(false);
 
-  const fetchToken = async (): Promise<string | null> => {
-    try {
-      const response = await axios.post(
-        "https://client.sapatelemed.kz/ecgList/token",
-        null,
-        {
-          params: {
-            username: "webStat",
-            password: "QupiyaSozWebPageBirBir",
-          },
-        }
-      );
-      return response.data.access_token;
-    } catch (error) {
-      console.error("Error fetching token:", error);
-      return null;
-    }
-  };
+  useEffect(() => {
+    if (!ecgData) return;
 
-  const fetchData = async (): Promise<void> => {
-    if (!organization || !dateFrom || !dateTo) {
-      alert("Пожалуйста, выберите регион, организацию и дату.");
-      return;
-    }
+    processGraphData(ecgData);
+  }, [ecgData]);
 
-    const formattedDateFrom = dateFrom.split("-").reverse().join("-");
-    const formattedDateTo = dateTo.split("-").reverse().join("-");
+  const processGraphData = (data: ECGData[]) => {
+    const dateCounts: Record<string, { green: number; yellow: number; red: number }> = {};
 
-    const token = await fetchToken();
-    if (!token) {
-      alert("Failed to fetch authorization token");
-      return;
-    }
-
-    setIsLoading(true);
-
-    try {
-      const response = await axios.get<ECGData[]>(
-        `https://client.sapatelemed.kz/ecgList/api/ECGResults/${organization}/${formattedDateFrom}/${formattedDateTo}`,
-        {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        }
-      );
-      processGraphData(response.data);
-    } catch (error) {
-      console.error("Error fetching ECG data:", error);
-    } finally {
-      setIsLoading(false);
-    }
-  };
-
-  const processGraphData = (data: ECGData[]): void => {
-    const dateCounts: Record<
-      string,
-      { green: number; yellow: number; red: number }
-    > = {};
-
-    // Normalize conditions for case-insensitive matching
-    const redConditionsLower = redConditions.map((condition) =>
-      condition.toLowerCase()
-    );
-    const yellowConditionsLower = yellowConditions.map((condition) =>
-      condition.toLowerCase()
-    );
+    // Normalize arrays for case-insensitive comparisons
+    const redConditionsLower = redConditions.map((c) => c.toLowerCase());
+    const yellowConditionsLower = yellowConditions.map((c) => c.toLowerCase());
 
     data.forEach((record) => {
       const date = record.ecgDate.split("T")[0];
-      const ecgDescriptionLower = record.ecgDescription.toLowerCase(); // Normalize description
+      const descLower = record.ecgDescription.toLowerCase();
 
       if (!dateCounts[date]) {
         dateCounts[date] = { green: 0, yellow: 0, red: 0 };
       }
 
-      if (
-        redConditionsLower.some((condition) =>
-          ecgDescriptionLower.includes(condition)
-        )
-      ) {
+      if (redConditionsLower.some((c) => descLower.includes(c))) {
         dateCounts[date].red++;
-      } else if (
-        yellowConditionsLower.some((condition) =>
-          ecgDescriptionLower.includes(condition)
-        )
-      ) {
+      } else if (yellowConditionsLower.some((c) => descLower.includes(c))) {
         dateCounts[date].yellow++;
       } else {
         dateCounts[date].green++;
@@ -222,17 +138,17 @@ const GraphOne: React.FC<GraphOneProps> = ({
       labels,
       datasets: [
         {
-          label: "Зеленый - В Норме",
+          label: "Зеленый (В норме)",
           data: greenData,
           backgroundColor: "#4caf50",
         },
         {
-          label: "Желтый - Есть осложнения",
+          label: "Желтый (Есть осложнения)",
           data: yellowData,
           backgroundColor: "#ffeb3b",
         },
         {
-          label: "Красный - Плохо",
+          label: "Красный (Плохо)",
           data: redData,
           backgroundColor: "#f44336",
         },
@@ -242,91 +158,16 @@ const GraphOne: React.FC<GraphOneProps> = ({
 
   return (
     <div className="graph-container">
-      <h1 className="graph-title">Аналитика ЭКГ скрининга</h1>
-      <form
-        className="graph-form"
-        onSubmit={(e) => {
-          e.preventDefault();
-          fetchData();
-        }}
-      >
-        <div className="form-group">
-          <RegionOrganizationSelector
-            region={region}
-            setRegion={setRegion}
-            organization={organization}
-            setOrganization={setOrganization}
-          />
-        </div>
-        <div className="form-group-inline">
-          <div className="form-group">
-            <label htmlFor="dateFrom">От (дата):</label>
-            <DatePicker
-              selected={
-                dateFrom
-                  ? new Date(dateFrom.split("-").reverse().join("-"))
-                  : null
-              } // Correctly use dateFrom
-              onChange={(date: Date | null) => {
-                if (date) {
-                  const day = date.getDate().toString().padStart(2, "0");
-                  const month = (date.getMonth() + 1)
-                    .toString()
-                    .padStart(2, "0");
-                  const year = date.getFullYear();
-                  setDateFrom(`${day}-${month}-${year}`);
-                } else {
-                  setDateFrom("");
-                }
-              }}
-              dateFormat="dd-MM-yyyy"
-              locale={ru}
-              className="form-input"
-            />
-          </div>
-          <div className="form-group">
-            <label htmlFor="dateTo">До (дата):</label>
-            <DatePicker
-              selected={
-                dateTo ? new Date(dateTo.split("-").reverse().join("-")) : null
-              } // Correctly use dateTo
-              onChange={(date: Date | null) => {
-                if (date) {
-                  const day = date.getDate().toString().padStart(2, "0");
-                  const month = (date.getMonth() + 1)
-                    .toString()
-                    .padStart(2, "0");
-                  const year = date.getFullYear();
-                  setDateTo(`${day}-${month}-${year}`);
-                } else {
-                  setDateTo("");
-                }
-              }}
-              dateFormat="dd-MM-yyyy"
-              locale={ru}
-              className="form-input"
-            />
-          </div>
-        </div>
+      <h2 className="graph-title">Общие результаты пациентов (GraphOne)</h2>
 
-        <button type="submit" className="form-button" disabled={isLoading}>
-          {isLoading ? "Загрузка..." : "Результаты"}
-        </button>
-      </form>
-
-      {isLoading ? (
-        <div className="loading-spinner-container">
-          <div className="loading-spinner"></div>
-          <p>Загрузка данных...</p>
-        </div>
-      ) : graphData ? (
+      {!ecgData.length ? (
+        <p>Нет данных для отображения.</p>
+      ) : !graphData ? (
+        <p>Обработка данных...</p>
+      ) : (
         <div className="graph-display">
           <Bar data={graphData} />
         </div>
-      ) : (
-        <p className="no-data-message">
-          Пожалуйста, выберите параметры и обновите данные.
-        </p>
       )}
     </div>
   );

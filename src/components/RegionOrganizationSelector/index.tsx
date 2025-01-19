@@ -1,4 +1,5 @@
 import React from "react";
+import "./RegionOrganization.css" 
 
 interface Region {
   id: number;
@@ -238,11 +239,12 @@ const RegionOrganizationSelector: React.FC<RegionOrganizationSelectorProps> = ({
   return (
     <div>
       <div>
-        <label htmlFor="region">Выберите регион: </label>
+        <label htmlFor="region" className="label">Выберите регион: </label>
         <select
           id="region"
           value={region || ""}
           onChange={handleRegionChange}
+          className="select"
         >
           <option value="" disabled>
             -- Выберите регион --
@@ -257,11 +259,12 @@ const RegionOrganizationSelector: React.FC<RegionOrganizationSelectorProps> = ({
       <br />
       {region && (
         <div>
-          <label htmlFor="organization">Выберите организацию: </label>
+          <label htmlFor="organization" className="label">Выберите организацию: </label>
           <select
             id="organization"
             value={organization}
             onChange={handleOrganizationChange}
+            className="select"
           >
             <option value="" disabled>
               -- Выберите организацию --
@@ -276,6 +279,7 @@ const RegionOrganizationSelector: React.FC<RegionOrganizationSelectorProps> = ({
       )}
     </div>
   );
+  
 };
 
 export default RegionOrganizationSelector;
