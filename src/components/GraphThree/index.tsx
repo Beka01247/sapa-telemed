@@ -47,10 +47,10 @@ const GraphThree: React.FC<GraphThreeProps> = ({ ecgData }) => {
 
   return (
     <div className="graph-container">
-      <h2 className="graph-title">АВ-блокада (GraphThree)</h2>
+      <h2 className="graph-title">АВ-блокада</h2>
 
       {!ecgData.length ? (
-        <p>Нет данных для отображения.</p>
+        <p className="no-data-label">Нет данных для отображения.</p>
       ) : !graphData ? (
         <p>Обработка данных...</p>
       ) : (

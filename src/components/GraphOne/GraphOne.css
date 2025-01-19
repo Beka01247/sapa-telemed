@@ -143,3 +143,9 @@ option {
   display: flex;
   flex-direction: column; 
 }
+
+.no-data-label{
+  color: black;
+  display: flex;
+  justify-content: center;
+}

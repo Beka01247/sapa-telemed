@@ -158,10 +158,10 @@ const GraphOne: React.FC<GraphOneProps> = ({ ecgData }) => {
 
   return (
     <div className="graph-container">
-      <h2 className="graph-title">Общие результаты пациентов (GraphOne)</h2>
+      <h2 className="graph-title">Общие результаты пациентов</h2>
 
       {!ecgData.length ? (
-        <p>Нет данных для отображения.</p>
+        <p className="no-data-label">Нет данных для отображения.</p>
       ) : !graphData ? (
         <p>Обработка данных...</p>
       ) : (

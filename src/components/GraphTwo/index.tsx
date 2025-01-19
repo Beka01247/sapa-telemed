@@ -68,10 +68,10 @@ const GraphTwo: React.FC<GraphTwoProps> = ({ ecgData }) => {
 
   return (
     <div className="graph-container">
-      <h2 className="graph-title">Нарушения ритма сердца (GraphTwo)</h2>
+      <h2 className="graph-title">Нарушения ритма сердца</h2>
 
       {!ecgData.length ? (
-        <p>Нет данных для отображения.</p>
+        <p className="no-data-label">Нет данных для отображения.</p>
       ) : !graphData ? (
         <p>Обработка данных...</p>
       ) : (

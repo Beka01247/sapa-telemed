@@ -65,10 +65,10 @@ const GraphFour: React.FC<GraphFourProps> = ({ ecgData }) => {
 
   return (
     <div className="graph-container">
-      <h2 className="graph-title">Нарушение внутрижелудочковой проводимости (GraphFour)</h2>
+      <h2 className="graph-title">Нарушение внутрижелудочковой проводимости</h2>
 
       {!ecgData.length ? (
-        <p>Нет данных для отображения.</p>
+        <p className="no-data-label">Нет данных для отображения.</p>
       ) : !chartDataBLNPG || !chartDataBRNPG ? (
         <p>Обработка данных...</p>
       ) : (
