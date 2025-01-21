@@ -58,7 +58,7 @@ const GraphTwo: React.FC<GraphTwoProps> = ({ ecgData }) => {
       }),
       datasets: [
         {
-          label: "Нарушения ритма сердца",
+          label: "Аритмия",
           data: counts,
           backgroundColor: "#1E88E5",
         },
@@ -68,7 +68,7 @@ const GraphTwo: React.FC<GraphTwoProps> = ({ ecgData }) => {
 
   return (
     <div className="graph-container">
-      <h2 className="graph-title">Нарушения ритма сердца</h2>
+      <h2 className="graph-title">Аритмия</h2>
 
       {!ecgData.length ? (
         <p className="no-data-label">Нет данных для отображения.</p>
