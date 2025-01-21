@@ -13,8 +13,104 @@ const calculateAge = (birthDate: string): number => {
   return age;
 };
 
+// Conditions lists
+const redConditions = [
+  "Брадиаритмии",
+  "Синдром слабости синусового узла (остановка синусового узла)",
+  "AV-блокада 2-й степени типа Мобитц",
+  "Полная AV-блокада",
+  "Тахиаритмии",
+  "Пароксизмальная желудочковая тахикардия",
+  "ЖТ типа «пируэт» torsades de pointes",
+  "Желудочковые экстрасистолы (плитопные ЖЭС, ранние ЖЭС по типу R на Т)",
+  "Синдром бругада",
+  "Long QT",
+];
+
+const yellowConditions = [
+  "Синусовая брадикардия",
+  "Синусовая тахикардия",
+  "Синусовая аритмия",
+  "Фибрилляция (мерцание) предсердий",
+  "нормосистолическая форма",
+  "тахисистолическая форма",
+  "Трепетание предсердий, правильная форма",
+  "Трепетание предсердий, неправильная форма",
+  "Экстрасистолия наджелудочковая",
+  "Экстрасистолия желудочковая",
+  "единичные экстрасистолы",
+  "парные экстрасистолы",
+  "групповые экстрасистолы",
+  "вставочные экстрасистолы",
+  "аллоритмия",
+  "Политопная экстрасистолия",
+  "Пароксизмальная тахикардия наджелудочковая",
+  "Желудочковая тахикардия",
+  "Синдром Фридерика",
+  "Фибрилляция желудочков",
+  "Искусственный водитель ритма",
+  "Синоатриальная блокада неполная",
+  "Синоатриальная блокада полная",
+  "Атриовентрикулярная блокада 1-й степени",
+  "Атриовентрикулярная блокада 2-й степени",
+  "Атриовентрикулярная блокада 3-й степени (полная)",
+  "Неполная блокада правой ветви пучка Гиса",
+  "Полная блокада правой ветви пучка Гиса",
+  "Блокада левой ножки пучка Гиса",
+  "Блокада передней левой ветви пучка Гиса",
+  "Блокада задней левой ветви пучка Гиса",
+  "Синдром WPW",
+  "Синдром укороченного PQ",
+  "Ишемия миокарда",
+  "Повреждение миокарда",
+  "субэндокардиальное",
+  "трансмуральное",
+  "Инфаркт миокарда с зубцом Q",
+  "Инфаркт миокарда без зубца Q",
+  "острый период",
+  "подострый период",
+  "рубцовые изменения",
+  "очаговые изменения миокарда",
+  "Признаки хронической коронарной недостаточности",
+  "передне-перегородочная",
+  "передне-верхушечная",
+  "боковая",
+  "задне-нижняя",
+  "задне-базальная",
+  "Синдром ранней реполяризации желудочков",
+  "Синдром удлиненного Q-T",
+  "Диффузные изменения процессов реполяризации",
+  "Признаки дигиталисной интоксикации",
+  "Легочное сердце (SIQIII)",
+  "Гипертрофия правого предсердия",
+  "Гипертрофия левого предсердия",
+  "Гипертрофия правого желудочка",
+  "Гипертрофия левого желудочка",
+  "С нарушением процессов реполяризации",
+];
+
 // Patient Details Component
 const PatientDetailsList: React.FC<{ ecgData: any[] }> = ({ ecgData }) => {
+  const filteredData = ecgData.filter((patient) => {
+    const description = patient.ecgDescription.toLowerCase();
+    if (redConditions.some((condition) => description.includes(condition.toLowerCase()))) {
+      patient.severity = "red";
+      return true;
+    }
+    if (yellowConditions.some((condition) => description.includes(condition.toLowerCase()))) {
+      patient.severity = "yellow";
+      return true;
+    }
+    return false;
+  });
+
+  // Sort by severity (red first, then yellow)
+  filteredData.sort((a, b) => {
+    if (a.severity === "red" && b.severity === "yellow") return -1;
+    if (a.severity === "yellow" && b.severity === "red") return 1;
+    return 0;
+  });
+
   return (
     <div className={styles.scrollableContainer}>
       <h2 className={styles.patientListTitle}>Список пациентов</h2>
@@ -27,15 +123,15 @@ const PatientDetailsList: React.FC<{ ecgData: any[] }> = ({ ecgData }) => {
             <th>ИИН</th>
             <th>Описание ЭКГ</th>
             <th>Ссылка</th>
+            <th>Статус</th>
           </tr>
         </thead>
         <tbody>
-          {ecgData.map((patient, index) => (
+          {filteredData.map((patient, index) => (
             <tr key={index}>
               <td>
-                {new Date(patient.ecgDate).toLocaleDateString()}{" "}
-                {new Date(patient.ecgDate).toLocaleTimeString("en-GB")}{" "}
-                {/* 24-hour format */}
+                {new Date(patient.ecgDate).toLocaleDateString()} {" "}
+                {new Date(patient.ecgDate).toLocaleTimeString("en-GB")} {" "}
               </td>
               <td>{calculateAge(patient.bDate)}</td>
               <td>{patient.sex}</td>
@@ -49,6 +145,18 @@ const PatientDetailsList: React.FC<{ ecgData: any[] }> = ({ ecgData }) => {
                 >
                   Просмотр
                 </a>
+              </td>
+              <td>
+                <span
+                  style={{
+                    display: "inline-block",
+                    width: "18px",
+                    height: "18px",
+                    borderRadius: "50%",
+                    backgroundColor: patient.severity === "red" ? "#f44336" : "#ffeb3b",
+                    margin: "16px",
+                  }}
+                ></span>
               </td>
             </tr>
           ))}
