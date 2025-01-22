@@ -67,120 +67,125 @@ const GraphSix: React.FC<GraphSixProps> = ({ ecgData }) => {
   };
 
   const options: ChartOptions<"bar"> = {
-      responsive: true,
-      plugins: {
-        legend: {
-          display: true,
-          position: "top",
-          labels: {
-            font: {
-              size: 12,
-              family: "Arial",
-              weight: "bold",
-            },
-            padding: 10, // Use positive padding to ensure proper spacing
-            color: "#4F4F4F",
-          },
-        },
-        tooltip: {
-          enabled: true,
-          backgroundColor: "#ffffff",
-          titleColor: "#333",
-          bodyColor: "#4F4F4F",
-          borderColor: "#e0e0e0",
-          borderWidth: 1,
-          titleFont: {
-            size: 14,
+    responsive: true,
+    plugins: {
+      legend: {
+        display: true,
+        position: "top",
+        labels: {
+          font: {
+            size: 12,
+            family: "Arial",
             weight: "bold",
           },
-          bodyFont: {
-            size: 12,
-          },
+          padding: 10,
+          color: "#4F4F4F",
         },
-        datalabels: {
-          display: true,
-          align: "top",
-          anchor: "end",
-          formatter: (value, context) => {
-            const total = context.chart.data.datasets
-              .map((dataset) => {
-                const dataValue = dataset.data[context.dataIndex];
-                return typeof dataValue === "number" ? dataValue : 0; // Ensure only numbers are summed
-              })
-              .reduce((sum, val) => sum + val, 0); // Safely sum up numbers
-          
-            if (total === 0) return ""; // Skip if total is 0 to avoid division by zero
-          
-            const percentage = ((value / total) * 100).toFixed(1);
-            return percentage === "0.0" ? "" : `${percentage}%`; // Skip if percentage is 0%
-          },
-          offset: -5 , // Positive offset to avoid overlapping with bars
+      },
+      tooltip: {
+        enabled: true,
+        backgroundColor: "#ffffff",
+        titleColor: "#333",
+        bodyColor: "#4F4F4F",
+        borderColor: "#e0e0e0",
+        borderWidth: 1,
+        titleFont: {
+          size: 14,
+          weight: "bold",
+        },
+        bodyFont: {
+          size: 12,
+        },
+      },
+      datalabels: {
+        display: true,
+        align: "top",
+        anchor: "end",
+        formatter: (value, context) => {
+          const total = context.chart.data.datasets
+            .map((dataset) => {
+              const dataValue = dataset.data[context.dataIndex];
+              return typeof dataValue === "number" ? dataValue : 0;
+            })
+            .reduce((sum, val) => sum + val, 0);
+
+          if (total === 0) return "";
+
+          const percentage = ((value / total) * 100).toFixed(1);
+          return percentage === "0.0" ? "" : `${percentage}%`;
+        },
+        offset: -5,
+        font: {
+          size: 12,
+          weight: "bold",
+        },
+        color: "#333",
+      },
+    },
+    layout: {
+      padding: {
+        top: 20,
+      },
+    },
+    scales: {
+      x: {
+        stacked: false,
+        ticks: {
           font: {
             size: 12,
             weight: "bold",
           },
-          color: "#333",
+          color: "#4F4F4F",
+        },
+        title: {
+          display: true,
+          text: "Возраст",
+          font: {
+            size: 14,
+            weight: "bold",
+          },
+          color: "#4F4F4F",
         },
       },
-      layout: {
-        padding: {
-          top: 20, // Use positive padding to add extra space above the chart
+      y: {
+        stacked: false,
+        beginAtZero: true,
+        ticks: {
+          font: {
+            size: 12,
+            weight: "bold",
+          },
+          color: "#4F4F4F",
+        },
+        title: {
+          display: true,
+          text: "Кол-во обследованных",
+          font: {
+            size: 14,
+            weight: "bold",
+          },
+          color: "#4F4F4F",
+        },
+        grid: {
+          color: "#e0e0e0",
         },
       },
-      scales: {
-        x: {
-          stacked: false,
-          ticks: {
-            font: {
-              size: 12,
-              weight: "bold",
-            },
-            color: "#4F4F4F",
-          },
-          title: {
-            display: true,
-            text: "Возраст",
-            font: {
-              size: 14,
-              weight: "bold",
-            },
-            color: "#4F4F4F",
-          },
-        },
-        y: {
-          stacked: false,
-          beginAtZero: true,
-          ticks: {
-            font: {
-              size: 12,
-              weight: "bold",
-            },
-            color: "#4F4F4F",
-          },
-          title: {
-            display: true,
-            text: "Кол-во обследованных",
-            font: {
-              size: 14,
-              weight: "bold",
-            },
-            color: "#4F4F4F",
-          },
-          grid: {
-            color: "#e0e0e0",
-          },
-        },
-      },
-    };
+    },
+  };
 
   return (
     <div className="graph-container-v3">
       <h2 className="graph-title">Аритмия в разрезе возраста</h2>
-      {graphData ? 
-      <div className="graph-display">
-        <Bar data={graphData} options={options} plugins={[ChartDataLabels]} /> 
-      </div>
-      : <p>Обработка данных...</p>}
+
+      {!ecgData.length ? (
+        <p className="no-data-label" style={{ color: "#000" }}>Нет данных для отображения.</p>
+      ) : !graphData ? (
+        <p>Обработка данных...</p>
+      ) : (
+        <div className="graph-display">
+          <Bar data={graphData} options={options} plugins={[ChartDataLabels]} />
+        </div>
+      )}
     </div>
   );
 };

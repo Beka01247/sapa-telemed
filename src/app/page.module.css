@@ -1,6 +1,4 @@
 .pageWrapper {
-  /* Light gray-blue background */
-  background-color: #f5f9ff; 
   min-height: 100vh;            /* let it fill at least the full screen height */
   max-width: 1400px;           /* or any other container width you prefer */
   margin: 0 auto;              /* center horizontally */
@@ -31,7 +29,6 @@
   justify-content: center; /* Center align vertically */
   gap: 1.5rem;
   margin-bottom: 2rem;
-  background-color: #f8f8f8;
   padding: 1rem 1.5rem;
   border-radius: 8px;
 }
