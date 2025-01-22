@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { Doughnut } from "react-chartjs-2";
 import "chart.js/auto";
+import ChartDataLabels from "chartjs-plugin-datalabels";
 import "./GraphFour.css";
 
 interface ECGData {
@@ -21,14 +22,14 @@ const GraphFour: React.FC<GraphFourProps> = ({ ecgData }) => {
   }, [ecgData]);
 
   const processGraphData = (data: ECGData[]) => {
-    const blnpgCounts = { ПБЛНПГ: 0, НБЛНПГ: 0 }; // "Полная" vs "Неполная" блокада левой ножки
-    const brnpgCounts = { ПБПНПГ: 0, НБПНПГ: 0 }; // "Полная" vs "Неполная" блокада правой ножки
+    const blnpgCounts = { ПБЛНПГ: 0, НБЛНПГ: 0 };
+    const brnpgCounts = { ПБПНПГ: 0, НБПНПГ: 0 };
 
     data.forEach((record) => {
       const desc = record.ecgDescription.toLowerCase();
       if (desc.includes("полная блокада левой ножки пучка гиса")) {
         blnpgCounts["ПБЛНПГ"]++;
-      } 
+      }
       if (desc.includes("неполная блокада левой ножки пучка гиса")) {
         blnpgCounts["НБЛНПГ"]++;
       }
@@ -40,8 +41,15 @@ const GraphFour: React.FC<GraphFourProps> = ({ ecgData }) => {
       }
     });
 
+    const totalBLNPG = blnpgCounts["ПБЛНПГ"] + blnpgCounts["НБЛНПГ"];
+    const totalBRNPG = brnpgCounts["ПБПНПГ"] + brnpgCounts["НБПНПГ"];
+    const totalOverall = totalBLNPG + totalBRNPG;
+
+    const blnpgPercentage = totalOverall > 0 ? ((totalBLNPG / totalOverall) * 100).toFixed(1) : "0";
+    const brnpgPercentage = totalOverall > 0 ? ((totalBRNPG / totalOverall) * 100).toFixed(1) : "0";
+
     setChartDataBLNPG({
-      labels: ["ПБЛНПГ", "НБЛНПГ"],
+      labels: ["ПБЛНПГ", "НБЛНПГ"], // Smaller labels without percentages
       datasets: [
         {
           label: "БЛНПГ",
@@ -49,10 +57,11 @@ const GraphFour: React.FC<GraphFourProps> = ({ ecgData }) => {
           backgroundColor: ["#f44336", "#4caf50"],
         },
       ],
+      overallPercentage: blnpgPercentage, // Overall percentage
     });
 
     setChartDataBRNPG({
-      labels: ["ПБПНПГ", "НБПНПГ"],
+      labels: ["ПБПНПГ", "НБПНПГ"], // Smaller labels without percentages
       datasets: [
         {
           label: "БПНПГ",
@@ -60,6 +69,7 @@ const GraphFour: React.FC<GraphFourProps> = ({ ecgData }) => {
           backgroundColor: ["#f44336", "#1E88E5"],
         },
       ],
+      overallPercentage: brnpgPercentage, // Overall percentage
     });
   };
 
@@ -74,12 +84,66 @@ const GraphFour: React.FC<GraphFourProps> = ({ ecgData }) => {
       ) : (
         <div className="graph-display">
           <div className="section">
-            <h3>БЛНПГ</h3>
-            <Doughnut data={chartDataBLNPG} />
+            <h3>БЛНПГ ({chartDataBLNPG?.overallPercentage}%)</h3>
+            <Doughnut
+              data={chartDataBLNPG}
+              options={{
+                plugins: {
+                  legend: {
+                    position: "top",
+                  },
+                  datalabels: {
+                    display: true,
+                    formatter: (value, context) => {
+                      const total = context.dataset.data
+                        .filter((val): val is number => typeof val === "number")
+                        .reduce((sum, val) => sum + val, 0);
+
+                      if (total === 0) return "";
+                      const percentage = ((value / total) * 100).toFixed(1);
+                      return `${percentage}%`;
+                    },
+                    color: "#000",
+                    font: {
+                      size: 14,
+                      weight: "bold",
+                    },
+                  },
+                },
+              }}
+              plugins={[ChartDataLabels]}
+            />
           </div>
           <div className="section">
-            <h3>БПНПГ</h3>
-            <Doughnut data={chartDataBRNPG} />
+            <h3>БПНПГ ({chartDataBRNPG?.overallPercentage}%)</h3>
+            <Doughnut
+              data={chartDataBRNPG}
+              options={{
+                plugins: {
+                  legend: {
+                    position: "top",
+                  },
+                  datalabels: {
+                    display: true,
+                    formatter: (value, context) => {
+                      const total = context.dataset.data
+                        .filter((val): val is number => typeof val === "number")
+                        .reduce((sum, val) => sum + val, 0);
+
+                      if (total === 0) return "";
+                      const percentage = ((value / total) * 100).toFixed(1);
+                      return `${percentage}%`;
+                    },
+                    color: "#000",
+                    font: {
+                      size: 14,
+                      weight: "bold",
+                    },
+                  },
+                },
+              }}
+              plugins={[ChartDataLabels]}
+            />
           </div>
         </div>
       )}

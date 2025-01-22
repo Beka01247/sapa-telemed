@@ -2,9 +2,9 @@
   padding: 30px;
   max-width: 1000px;
   margin: 0 auto;
-  background-color: #f0f4f8;
+  background: linear-gradient(145deg, #e0e5ec, #ffffff);
   border-radius: 12px;
-  box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15);
+  box-shadow: 10px 10px 20px #d1d9e6, -10px -10px 20px #ffffff;
 }
 
 .graph-title {
@@ -13,54 +13,7 @@
   margin-bottom: 20px;
   font-size: 28px;
   font-weight: bold;
-}
-
-.graph-form {
-  display: flex;
-  flex-direction: column;
-  gap: 15px;
-}
-
-.form-group {
-  display: flex;
-  flex-direction: column;
-}
-
-.form-group label {
-  font-weight: bold;
-  margin-bottom: 5px;
-  color: #555;
-}
-
-.form-input {
-  padding: 10px;
-  border: 1px solid #ccc;
-  border-radius: 6px;
-  background-color: #ffffff;
-  font-size: 16px;
-  color: #333;
-}
-
-.form-input:focus {
-  border-color: #0070f3;
-  outline: none;
-  box-shadow: 0 0 4px rgba(0, 112, 243, 0.5);
-}
-
-.form-button {
-  padding: 12px 20px;
-  background-color: #0070f3;
-  color: white;
-  border: none;
-  border-radius: 8px;
-  cursor: pointer;
-  font-weight: bold;
-  font-size: 16px;
-  transition: all 0.3s ease;
-}
-
-.form-button:hover {
-  background-color: #005bb5;
+  text-shadow: 1px 1px 2px #aaa;
 }
 
 .graph-display {
@@ -96,34 +49,10 @@
   }
 }
 
-.loading-spinner-container p {
-  margin-top: 10px;
-  font-size: 16px;
+.no-data-label {
   color: #555;
-}
-
-.no-data-message {
-  color: #333; 
   text-align: center;
   font-size: 16px;
   font-weight: bold;
   margin-top: 20px;
-}
-
-.form-group-inline {
-  display: flex;
-  gap: 20px; 
-  align-items: center; 
-  justify-content: center;
-}
-
-.form-group {
-  display: flex;
-  flex-direction: column; 
-}
-
-.no-data-label{
-  color: black;
-  display: flex;
-  justify-content: center;
 }
