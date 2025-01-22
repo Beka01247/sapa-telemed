@@ -1,0 +1,15 @@
+.graph-container-v3 {
+  margin: 20px auto;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  max-width: 900px;
+  height: 500px;
+  padding: 20px;
+}
+
+.graph-container-v3 canvas {
+  max-height: 100%;
+  width: 100% !important;
+}

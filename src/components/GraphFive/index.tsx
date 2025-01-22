@@ -65,7 +65,7 @@ const GraphFive: React.FC<GraphFiveProps> = ({ ecgData }) => {
   return (
     <div className="graph-container-v2">
       <div style={{ textAlign: "center", width: "100%", maxWidth: "500px", margin: "0 auto", height: "400px" }}>
-      <h2 className="graph-title">Распределение пола и аритмии</h2>
+      <h2 className="graph-title">Аритмия в разрезе пола</h2>
       {chartData ? (
         <Pie
           data={chartData}

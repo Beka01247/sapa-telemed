@@ -204,3 +204,11 @@
 .patientTable tr:hover {
   background-color: #f1f1f1; /* Highlight on row hover */
 }
+
+.sectionTitle {
+  font-size: 28px;
+  font-weight: bold;
+  text-align: center;
+  margin: 40px 0 20px;
+  color: #000; /* Ensures the text is black */
+}

@@ -13,6 +13,7 @@ import GraphTwo from "@/components/GraphTwo";
 import GraphThree from "@/components/GraphThree";
 import GraphFour from "@/components/GraphFour";
 import GraphFive from "@/components/GraphFive";
+import GraphSix from "@/components/GraphSix";
 
 import PatientDetailsList from "@/components/PatientDetailsList";
 
@@ -97,6 +98,20 @@ export default function Home() {
     }
   };
 
+  const calculateAge = (birthDate: string): number => {
+    const birthYear = parseInt(birthDate.split("/")[2], 10);
+    const currentYear = new Date().getFullYear();
+    return currentYear - birthYear;
+  };
+
+  // Transform data to include age
+  const transformedData = ecgData
+    ? ecgData.map((item) => ({
+        age: calculateAge(item.bDate),
+        ecgDescription: item.ecgDescription,
+      }))
+    : [];
+
   return (
     <div className={styles.pageWrapper}>
       <h1 className={styles.title}>ЭКГ-скриннинг "SapaTelemed"</h1>
@@ -138,9 +153,7 @@ export default function Home() {
             <label className={styles.datePickerLabel}>До (дата):</label>
             <DatePicker
               selected={
-                dateTo
-                  ? new Date(dateTo.split("-").reverse().join("-"))
-                  : null
+                dateTo ? new Date(dateTo.split("-").reverse().join("-")) : null
               }
               onChange={(date: Date | null) => {
                 if (date) {
@@ -174,8 +187,25 @@ export default function Home() {
           <p>Загрузка данных...</p>
         </div>
       )}
-
       {ecgData && !isLoading && (
+        <h2 className={styles.sectionTitle}>Общее</h2>
+      )}
+      {ecgData && !isLoading && (
+        <div className={styles.allGraphsContainer}>
+          <div className={styles.graphCard}>
+            <GraphFive ecgData={ecgData} />
+          </div>
+          <div className={styles.graphCard}>
+            <GraphSix ecgData={transformedData} />
+          </div>
+        </div>
+      )}
+
+      {ecgData && !isLoading &&(
+      <h2 className={styles.sectionTitle}>Детально</h2>
+      )}
+      
+      {ecgData && !isLoading &&(
         <div className={styles.allGraphsContainer}>
           <div className={styles.graphCard}>
             <GraphOne ecgData={ecgData} />
@@ -188,9 +218,6 @@ export default function Home() {
           </div>
           <div className={styles.graphCard}>
             <GraphFour ecgData={ecgData} />
-          </div>
-          <div className={styles.graphCard}>
-            <GraphFive ecgData={ecgData} />
           </div>
         </div>
       )}

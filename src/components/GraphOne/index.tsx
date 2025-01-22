@@ -147,17 +147,17 @@ const GraphOne: React.FC<GraphOneProps> = ({ ecgData }) => {
       labels,
       datasets: [
         {
-          label: "Зеленый (В норме)",
+          label: "В норме",
           data: greenData,
           backgroundColor: gradientColors("#81c784"),
         },
         {
-          label: "Желтый (С патологией)",
+          label: "С патологией",
           data: yellowData,
           backgroundColor: gradientColors("#fff176"),
         },
         {
-          label: "Красный (Аритмия)",
+          label: "Аритмия",
           data: redData,
           backgroundColor: gradientColors("#e57373"),
         },
@@ -258,7 +258,7 @@ const GraphOne: React.FC<GraphOneProps> = ({ ecgData }) => {
         },
         title: {
           display: true,
-          text: "Число событий",
+          text: "Кол-во обследованных",
           font: {
             size: 14,
             weight: "bold",
@@ -275,7 +275,7 @@ const GraphOne: React.FC<GraphOneProps> = ({ ecgData }) => {
   
   return (
     <div className="graph-container">
-      <h2 className="graph-title">Список ЭКГ</h2>
+      <h2 className="graph-title">Результаты ЭКГ скрининга</h2>
 
       {!ecgData.length ? (
         <p className="no-data-label">Нет данных для отображения.</p>

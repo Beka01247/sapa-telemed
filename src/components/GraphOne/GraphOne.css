@@ -3,13 +3,11 @@
   max-width: 900px;
   margin: 0 auto;
   background-color: #f9f9f9;
-  border-radius: 12px;
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
 }
 
 .graph-title {
   text-align: left;
-  font-size: 24px;
+  font-size: 26px;
   color: #4F4F4F;
   font-weight: bold;
   margin-bottom: 20px;
