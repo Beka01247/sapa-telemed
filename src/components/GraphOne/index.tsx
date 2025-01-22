@@ -1,7 +1,11 @@
 import React, { useState, useEffect } from "react";
 import { Bar } from "react-chartjs-2";
 import "chart.js/auto";
+import { Chart, ChartOptions } from "chart.js";
+import ChartDataLabels from "chartjs-plugin-datalabels";
 import "./GraphOne.css";
+
+Chart.register(ChartDataLabels);
 
 interface ECGData {
   ecgDate: string;
@@ -13,12 +17,12 @@ interface GraphData {
   datasets: {
     label: string;
     data: number[];
-    backgroundColor: string;
+    backgroundColor: string[];
   }[];
 }
 
 interface GraphOneProps {
-  ecgData: ECGData[]; // Received from parent
+  ecgData: ECGData[];
 }
 
 const redConditions = [
@@ -101,14 +105,12 @@ const GraphOne: React.FC<GraphOneProps> = ({ ecgData }) => {
 
   useEffect(() => {
     if (!ecgData) return;
-
     processGraphData(ecgData);
   }, [ecgData]);
 
   const processGraphData = (data: ECGData[]) => {
-    const dateCounts: Record<string, { green: number; yellow: number; red: number }> = {};
+    const dateCounts: Record<string, { green: number; yellow: number; red: number; total: number }> = {};
 
-    // Normalize arrays for case-insensitive comparisons
     const redConditionsLower = redConditions.map((c) => c.toLowerCase());
     const yellowConditionsLower = yellowConditions.map((c) => c.toLowerCase());
 
@@ -117,8 +119,10 @@ const GraphOne: React.FC<GraphOneProps> = ({ ecgData }) => {
       const descLower = record.ecgDescription.toLowerCase();
 
       if (!dateCounts[date]) {
-        dateCounts[date] = { green: 0, yellow: 0, red: 0 };
+        dateCounts[date] = { green: 0, yellow: 0, red: 0, total: 0 };
       }
+
+      dateCounts[date].total++;
 
       if (redConditionsLower.some((c) => descLower.includes(c))) {
         dateCounts[date].red++;
@@ -134,28 +138,141 @@ const GraphOne: React.FC<GraphOneProps> = ({ ecgData }) => {
     const yellowData = labels.map((label) => dateCounts[label].yellow);
     const redData = labels.map((label) => dateCounts[label].red);
 
+    const gradientColors = (color: string) => {
+      const gradient = new Array(labels.length).fill(color);
+      return gradient;
+    };
+
     setGraphData({
       labels,
       datasets: [
         {
           label: "Зеленый (В норме)",
           data: greenData,
-          backgroundColor: "#4caf50",
+          backgroundColor: gradientColors("#81c784"),
         },
         {
-          label: "Желтый (Есть осложнения)",
+          label: "Желтый (С патологией)",
           data: yellowData,
-          backgroundColor: "#ffeb3b",
+          backgroundColor: gradientColors("#fff176"),
         },
         {
-          label: "Красный (Плохо)",
+          label: "Красный (Аритмия)",
           data: redData,
-          backgroundColor: "#f44336",
+          backgroundColor: gradientColors("#e57373"),
         },
       ],
     });
   };
 
+  const options: ChartOptions<"bar"> = {
+    responsive: true,
+    plugins: {
+      legend: {
+        display: true,
+        position: "top",
+        labels: {
+          font: {
+            size: 12,
+            family: "Arial",
+            weight: "bold",
+          },
+          padding: 10, // Use positive padding to ensure proper spacing
+          color: "#4F4F4F",
+        },
+      },
+      tooltip: {
+        enabled: true,
+        backgroundColor: "#ffffff",
+        titleColor: "#333",
+        bodyColor: "#4F4F4F",
+        borderColor: "#e0e0e0",
+        borderWidth: 1,
+        titleFont: {
+          size: 14,
+          weight: "bold",
+        },
+        bodyFont: {
+          size: 12,
+        },
+      },
+      datalabels: {
+        display: true,
+        align: "top",
+        anchor: "end",
+        formatter: (value, context) => {
+          const total = context.chart.data.datasets
+            .map((dataset) => {
+              const dataValue = dataset.data[context.dataIndex];
+              return typeof dataValue === "number" ? dataValue : 0; // Ensure only numbers are summed
+            })
+            .reduce((sum, val) => sum + val, 0); // Safely sum up numbers
+        
+          if (total === 0) return ""; // Skip if total is 0 to avoid division by zero
+        
+          const percentage = ((value / total) * 100).toFixed(1);
+          return percentage === "0.0" ? "" : `${percentage}%`; // Skip if percentage is 0%
+        },
+        offset: -5 , // Positive offset to avoid overlapping with bars
+        font: {
+          size: 12,
+          weight: "bold",
+        },
+        color: "#333",
+      },
+    },
+    layout: {
+      padding: {
+        top: 20, // Use positive padding to add extra space above the chart
+      },
+    },
+    scales: {
+      x: {
+        stacked: false,
+        ticks: {
+          font: {
+            size: 12,
+            weight: "bold",
+          },
+          color: "#4F4F4F",
+        },
+        title: {
+          display: true,
+          text: "Даты",
+          font: {
+            size: 14,
+            weight: "bold",
+          },
+          color: "#4F4F4F",
+        },
+      },
+      y: {
+        stacked: false,
+        beginAtZero: true,
+        ticks: {
+          font: {
+            size: 12,
+            weight: "bold",
+          },
+          color: "#4F4F4F",
+        },
+        title: {
+          display: true,
+          text: "Число событий",
+          font: {
+            size: 14,
+            weight: "bold",
+          },
+          color: "#4F4F4F",
+        },
+        grid: {
+          color: "#e0e0e0",
+        },
+      },
+    },
+  };
+  
+  
   return (
     <div className="graph-container">
       <h2 className="graph-title">Список ЭКГ</h2>
@@ -166,11 +283,10 @@ const GraphOne: React.FC<GraphOneProps> = ({ ecgData }) => {
         <p>Обработка данных...</p>
       ) : (
         <div className="graph-display">
-          <Bar data={graphData} />
+          <Bar data={graphData} options={options} />
         </div>
       )}
     </div>
   );
 };
-
 export default GraphOne;

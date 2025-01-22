@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { Bar } from "react-chartjs-2";
 import "chart.js/auto";
+import ChartDataLabels from "chartjs-plugin-datalabels";
 import "./GraphThree.css";
 
 interface ECGData {
@@ -62,6 +63,34 @@ const GraphThree: React.FC<GraphThreeProps> = ({ ecgData }) => {
                 legend: {
                   display: false,
                 },
+                tooltip: {
+                  backgroundColor: "#ffffff",
+                  titleColor: "#333",
+                  bodyColor: "#4F4F4F",
+                  borderColor: "#e0e0e0",
+                  borderWidth: 1,
+                },
+                datalabels: {
+                  display: true, // Enable percentage labels
+                  align: "top",
+                  anchor: "end",
+                  offset: -8, // Space between label and bar
+                  formatter: (value, context) => {
+                    const total = context.chart.data.datasets[0].data
+                      .map((val) => (typeof val === "number" ? val : 0)) // Ensure only numeric values
+                      .reduce((sum, val) => sum + val, 0); // Calculate total cases
+
+                    if (total === 0) return ""; // Skip if total is 0 to avoid division by zero
+
+                    const percentage = ((value / total) * 100).toFixed(1);
+                    return percentage === "0.0" ? "" : `${percentage}%`; // Skip 0%
+                  },
+                  font: {
+                    size: 12,
+                    weight: "bold",
+                  },
+                  color: "#333",
+                },
               },
               scales: {
                 x: {
@@ -78,6 +107,7 @@ const GraphThree: React.FC<GraphThreeProps> = ({ ecgData }) => {
                 },
               },
             }}
+            plugins={[ChartDataLabels]} // Register datalabels plugin
           />
         </div>
       )}
