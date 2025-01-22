@@ -12,14 +12,26 @@ import GraphOne from "@/components/GraphOne";
 import GraphTwo from "@/components/GraphTwo";
 import GraphThree from "@/components/GraphThree";
 import GraphFour from "@/components/GraphFour";
-import GraphFive from "@/components/GraphFive"; // Import GraphFive
+import GraphFive from "@/components/GraphFive";
 
 import PatientDetailsList from "@/components/PatientDetailsList";
 
 interface ECGData {
   ecgDate: string;
+  bDate: string;
+  monitorSN: string;
+  fio: string;
+  sex: string;
+  iin: string;
   ecgDescription: string;
-  gender: string;
+  recordedBy: string;
+  recordedById: string | null;
+  recordedByOrg: string;
+  recordedByOrgId: string | null;
+  diagnosedBy: string;
+  diagnosedById: string | null;
+  diagnosedByOrg: string;
+  ecgLink: string;
 }
 
 export default function Home() {
@@ -178,7 +190,7 @@ export default function Home() {
             <GraphFour ecgData={ecgData} />
           </div>
           <div className={styles.graphCard}>
-            <GraphFive ecgData={ecgData} /> {/* Add GraphFive */}
+            <GraphFive ecgData={ecgData} />
           </div>
         </div>
       )}

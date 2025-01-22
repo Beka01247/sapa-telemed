@@ -182,3 +182,7 @@
   display: flex;
   justify-content: center;
 }
+
+.section h3{
+  color: black;
+}
