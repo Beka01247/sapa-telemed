@@ -181,54 +181,48 @@ export default function Home() {
         </button>
       </div>
 
-      {isLoading && (
+      {isLoading ? (
         <div className={styles.loadingSpinnerContainer}>
           <div className={styles.loadingSpinner}></div>
           <p>Загрузка данных...</p>
         </div>
-      )}
-      {ecgData && !isLoading && (
-        <h2 className={styles.sectionTitle}>Общее</h2>
-      )}
-      {ecgData && !isLoading && (
-        <div className={styles.allGraphsContainer}>
-          <div className={styles.graphCard}>
-            <GraphFive ecgData={ecgData} />
+      ) : ecgData && ecgData.length === 0 ? (
+        <p className={styles.noDataMessage}>
+          Нет данных для отображения.
+        </p>
+      ) : ecgData ? (
+        <>
+          <h2 className={styles.sectionTitle}>Общее</h2>
+          <div className={styles.allGraphsContainer}>
+            <div className={styles.graphCard}>
+              <GraphFive ecgData={ecgData} />
+            </div>
+            <div className={styles.graphCard}>
+              <GraphSix ecgData={transformedData} />
+            </div>
           </div>
-          <div className={styles.graphCard}>
-            <GraphSix ecgData={transformedData} />
-          </div>
-        </div>
-      )}
 
-      {ecgData && !isLoading &&(
-      <h2 className={styles.sectionTitle}>Детально</h2>
-      )}
-      
-      {ecgData && !isLoading &&(
-        <div className={styles.allGraphsContainer}>
-          <div className={styles.graphCard}>
-            <GraphOne ecgData={ecgData} />
+          <h2 className={styles.sectionTitle}>Детально</h2>
+          <div className={styles.allGraphsContainer}>
+            <div className={styles.graphCard}>
+              <GraphOne ecgData={ecgData} />
+            </div>
+            <div className={styles.graphCard}>
+              <GraphTwo ecgData={ecgData} />
+            </div>
+            <div className={styles.graphCard}>
+              <GraphThree ecgData={ecgData} />
+            </div>
+            <div className={styles.graphCard}>
+              <GraphFour ecgData={ecgData} />
+            </div>
           </div>
-          <div className={styles.graphCard}>
-            <GraphTwo ecgData={ecgData} />
-          </div>
-          <div className={styles.graphCard}>
-            <GraphThree ecgData={ecgData} />
-          </div>
-          <div className={styles.graphCard}>
-            <GraphFour ecgData={ecgData} />
-          </div>
-        </div>
-      )}
 
-      {ecgData && !isLoading && (
-        <div className={styles.patientListWrapper}>
-          <PatientDetailsList ecgData={ecgData} />
-        </div>
-      )}
-
-      {!isLoading && !ecgData && (
+          <div className={styles.patientListWrapper}>
+            <PatientDetailsList ecgData={ecgData} />
+          </div>
+        </>
+      ) : (
         <p className={styles.noDataMessage}>
           Пожалуйста, выберите параметры и нажмите "Получить результаты".
         </p>

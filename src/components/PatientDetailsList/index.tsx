@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import styles from "./index.module.css";
 
 // Helper function to calculate age
@@ -91,15 +91,17 @@ const yellowConditions = [
 
 // Patient Details Component
 const PatientDetailsList: React.FC<{ ecgData: any[] }> = ({ ecgData }) => {
+  const [filter, setFilter] = useState<string | null>(null);
+
   const filteredData = ecgData.filter((patient) => {
     const description = patient.ecgDescription.toLowerCase();
     if (redConditions.some((condition) => description.includes(condition.toLowerCase()))) {
       patient.severity = "red";
-      return true;
+      return filter === null || filter === "red";
     }
     if (yellowConditions.some((condition) => description.includes(condition.toLowerCase()))) {
       patient.severity = "yellow";
-      return true;
+      return filter === null || filter === "yellow";
     }
     return false;
   });
@@ -114,54 +116,63 @@ const PatientDetailsList: React.FC<{ ecgData: any[] }> = ({ ecgData }) => {
   return (
     <div className={styles.scrollableContainer}>
       <h2 className={styles.patientListTitle}>Список пациентов</h2>
-      <table className={styles.patientTable}>
-        <thead>
-          <tr>
-            <th>Дата и Время ЭКГ</th>
-            <th>Возраст</th>
-            <th>Пол</th>
-            <th>ИИН</th>
-            <th>Описание ЭКГ</th>
-            <th>Ссылка</th>
-            <th>Статус</th>
-          </tr>
-        </thead>
-        <tbody>
-          {filteredData.map((patient, index) => (
-            <tr key={index}>
-              <td>
-                {new Date(patient.ecgDate).toLocaleDateString()} {" "}
-                {new Date(patient.ecgDate).toLocaleTimeString("en-GB")} {" "}
-              </td>
-              <td>{calculateAge(patient.bDate)}</td>
-              <td>{patient.sex}</td>
-              <td>{patient.iin}</td>
-              <td>{patient.ecgDescription}</td>
-              <td>
-                <a
-                  href={patient.ecgLink}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                >
-                  Просмотр
-                </a>
-              </td>
-              <td>
-                <span
-                  style={{
-                    display: "inline-block",
-                    width: "18px",
-                    height: "18px",
-                    borderRadius: "50%",
-                    backgroundColor: patient.severity === "red" ? "#f44336" : "#ffeb3b",
-                    margin: "16px",
-                  }}
-                ></span>
-              </td>
+      <div className={styles.filterButtons}>
+        <button onClick={() => setFilter(null)}>Все</button>
+        <button onClick={() => setFilter("red")}>Только красные</button>
+        <button onClick={() => setFilter("yellow")}>Только желтые</button>
+      </div>
+      {filteredData.length > 0 ? (
+        <table className={styles.patientTable}>
+          <thead>
+            <tr>
+              <th>Дата и Время ЭКГ</th>
+              <th>Возраст</th>
+              <th>Пол</th>
+              <th>ИИН</th>
+              <th>Описание ЭКГ</th>
+              <th>Ссылка</th>
+              <th>Статус</th>
             </tr>
-          ))}
-        </tbody>
-      </table>
+          </thead>
+          <tbody>
+            {filteredData.map((patient, index) => (
+              <tr key={index}>
+                <td>
+                  {new Date(patient.ecgDate).toLocaleDateString()} {" "}
+                  {new Date(patient.ecgDate).toLocaleTimeString("en-GB")} {" "}
+                </td>
+                <td>{calculateAge(patient.bDate)}</td>
+                <td>{patient.sex}</td>
+                <td>{patient.iin}</td>
+                <td>{patient.ecgDescription}</td>
+                <td>
+                  <a
+                    href={patient.ecgLink}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                  >
+                    Просмотр
+                  </a>
+                </td>
+                <td>
+                  <span
+                    style={{
+                      display: "inline-block",
+                      width: "18px",
+                      height: "18px",
+                      borderRadius: "50%",
+                      backgroundColor: patient.severity === "red" ? "#f44336" : "#ffeb3b",
+                      margin: "16px",
+                    }}
+                  ></span>
+                </td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      ) : (
+        <p style={{ textAlign: "center", color: "#000", marginTop: "1rem" }}>Нет данных для отображения</p>
+      )}
     </div>
   );
 };

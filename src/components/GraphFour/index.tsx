@@ -49,48 +49,64 @@ const GraphFour: React.FC<GraphFourProps> = ({ ecgData }) => {
     const brnpgPercentage = totalOverall > 0 ? ((totalBRNPG / totalOverall) * 100).toFixed(1) : "0";
 
     setChartDataBLNPG({
-      labels: ["ПБЛНПГ", "НБЛНПГ"], // Smaller labels without percentages
+      labels: ["ПБЛНПГ", "НБЛНПГ"],
       datasets: [
         {
-          label: "БЛНПГ",
           data: [blnpgCounts["ПБЛНПГ"], blnpgCounts["НБЛНПГ"]],
-          backgroundColor: ["#f44336", "#4caf50"],
+          backgroundColor: ["#FF6384", "#36A2EB"],
+          hoverBackgroundColor: ["#FF80A4", "#64B6F2"],
+          borderWidth: 2,
+          cutout: "0%",
         },
       ],
-      overallPercentage: blnpgPercentage, // Overall percentage
+      overallPercentage: blnpgPercentage,
     });
 
     setChartDataBRNPG({
-      labels: ["ПБПНПГ", "НБПНПГ"], // Smaller labels without percentages
+      labels: ["ПБПНПГ", "НБПНПГ"],
       datasets: [
         {
-          label: "БПНПГ",
           data: [brnpgCounts["ПБПНПГ"], brnpgCounts["НБПНПГ"]],
-          backgroundColor: ["#f44336", "#1E88E5"],
+          backgroundColor: ["#FFCD56", "#4BC0C0"],
+          hoverBackgroundColor: ["#FFE08A", "#72D7D7"],
+          borderWidth: 2,
+          cutout: "0%",
         },
       ],
-      overallPercentage: brnpgPercentage, // Overall percentage
+      overallPercentage: brnpgPercentage,
     });
   };
 
   return (
     <div className="graph-container">
-      <h2 className="graph-title">Нарушение внутрижелудочковой проводимости</h2>
+      <h2 className="graph-title" style={{ fontWeight: "bold", color: "#333" }}>
+        Нарушение внутрижелудочковой проводимости
+      </h2>
 
       {!ecgData.length ? (
-        <p className="no-data-label">Нет данных для отображения.</p>
+        <p className="no-data-label" style={{ color: "#888" }}>Нет данных для отображения.</p>
       ) : !chartDataBLNPG || !chartDataBRNPG ? (
-        <p>Обработка данных...</p>
+        <p style={{ color: "#888" }}>Обработка данных...</p>
       ) : (
-        <div className="graph-display">
-          <div className="section">
-            <h3>БЛНПГ ({chartDataBLNPG?.overallPercentage}%)</h3>
+        <div className="graph-display" style={{ display: "flex", gap: "2rem", justifyContent: "center" }}>
+          <div className="section" style={{ textAlign: "center", width: "45%" }}>
+            <h3 style={{ color: "#000", fontWeight: "bold", marginBottom: "1rem" }}>
+              БЛНПГ ({chartDataBLNPG?.overallPercentage}%)
+            </h3>
             <Doughnut
               data={chartDataBLNPG}
               options={{
                 plugins: {
                   legend: {
+                    display: true,
                     position: "top",
+                    labels: {
+                      font: {
+                        size: 14,
+                        weight: "bold",
+                      },
+                      color: "#555",
+                    },
                   },
                   datalabels: {
                     display: true,
@@ -114,14 +130,24 @@ const GraphFour: React.FC<GraphFourProps> = ({ ecgData }) => {
               plugins={[ChartDataLabels]}
             />
           </div>
-          <div className="section">
-            <h3>БПНПГ ({chartDataBRNPG?.overallPercentage}%)</h3>
+          <div className="section" style={{ textAlign: "center", width: "45%" }}>
+            <h3 style={{ color: "#000", fontWeight: "bold", marginBottom: "1rem" }}>
+              БПНПГ ({chartDataBRNPG?.overallPercentage}%)
+            </h3>
             <Doughnut
               data={chartDataBRNPG}
               options={{
                 plugins: {
                   legend: {
+                    display: true,
                     position: "top",
+                    labels: {
+                      font: {
+                        size: 14,
+                        weight: "bold",
+                      },
+                      color: "#555",
+                    },
                   },
                   datalabels: {
                     display: true,

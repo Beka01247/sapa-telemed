@@ -64,43 +64,46 @@ const GraphFive: React.FC<GraphFiveProps> = ({ ecgData }) => {
 
   return (
     <div className="graph-container-v2">
-      <div style={{ textAlign: "center", width: "100%", maxWidth: "500px", margin: "0 auto", height: "400px" }}>
       <h2 className="graph-title">Аритмия в разрезе пола</h2>
-      {chartData ? (
-        <Pie
-          data={chartData}
-          options={{
-            responsive: true,
-            maintainAspectRatio: false,
-            plugins: {
-              legend: {
-                position: "top",
-              },
-              datalabels: {
-                display: true,
-                formatter: (value, context) => {
-                  const total = (context.dataset.data as number[])
-                    .reduce((sum, val) => (sum ?? 0) + (val ?? 0), 0);
-                  if (total === 0) return "";
-                  const percentage = ((value / total) * 100).toFixed(1);
-                  return `${percentage}%`;
-                },
-                color: "#000",
-                font: {
-                  size: 14,
-                  weight: "bold",
-                },
-              },
-            },
-            cutout: "0%",
-            radius: "100%",
-          }}
-          plugins={[ChartDataLabels]}
-        />
-      ) : (
+
+      {!ecgData.length ? (
+        <p className="no-data-label" style={{ color: "#000" }}>Нет данных для отображения.</p>
+      ) : !chartData ? (
         <p>Обработка данных...</p>
+      ) : (
+        <div style={{ textAlign: "center", width: "100%", maxWidth: "500px", margin: "0 auto", height: "400px" }}>
+          <Pie
+            data={chartData}
+            options={{
+              responsive: true,
+              maintainAspectRatio: false,
+              plugins: {
+                legend: {
+                  position: "top",
+                },
+                datalabels: {
+                  display: true,
+                  formatter: (value, context) => {
+                    const total = (context.dataset.data as number[])
+                      .reduce((sum, val) => (sum ?? 0) + (val ?? 0), 0);
+                    if (total === 0) return "";
+                    const percentage = ((value / total) * 100).toFixed(1);
+                    return `${percentage}%`;
+                  },
+                  color: "#000",
+                  font: {
+                    size: 14,
+                    weight: "bold",
+                  },
+                },
+              },
+              cutout: "0%",
+              radius: "100%",
+            }}
+            plugins={[ChartDataLabels]}
+          />
+        </div>
       )}
-      </div>
     </div>
   );
 };
