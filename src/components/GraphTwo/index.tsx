@@ -23,14 +23,14 @@ const GraphTwo: React.FC<GraphTwoProps> = ({ ecgData }) => {
   const processGraphData = (data: ECGData[]) => {
     const rhythmCounts: Record<string, number> = {
       "AV блокада": 0,
-      БНП: 0,
+      "БНП": 0,
       "Синусовая брадикардия": 0,
       "Синусовая тахикардия": 0,
-      ФП: 0,
-      Экстрасистолы: 0,
-      CLC: 0,
+      "ФП": 0,
+      "Экстрасистолы": 0,
+      "CLC": 0,
       "Синдром WPW": 0,
-      LongQT: 0,
+      "LongQT": 0,
       "Пароксизмальная ЖТ": 0,
       "Пароксизмальная НЖТ": 0,
     };

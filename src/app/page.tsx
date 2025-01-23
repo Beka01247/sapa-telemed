@@ -1,5 +1,4 @@
-"use client";
-
+"use client"
 import React, { useState, useEffect } from "react";
 import styles from "./page.module.css";
 import axios from "axios";
@@ -40,9 +39,18 @@ export default function Home() {
   const [organization, setOrganization] = useState<string>("");
   const [dateFrom, setDateFrom] = useState<string>("");
   const [dateTo, setDateTo] = useState<string>("");
+  const [showRegionNote, setShowRegionNote] = useState<boolean>(true);
 
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [ecgData, setEcgData] = useState<ECGData[] | null>(null);
+
+  useEffect(() => {
+    if (region !== null) {
+      setShowRegionNote(false);
+    } else {
+      setShowRegionNote(true);
+    }
+  }, [region]);
 
   const fetchToken = async (): Promise<string | null> => {
     try {
@@ -64,8 +72,13 @@ export default function Home() {
   };
 
   const fetchAllGraphsData = async (): Promise<void> => {
-    if (!organization || !dateFrom || !dateTo) {
-      alert("Пожалуйста, выберите регион, организацию и дату.");
+    if (!dateFrom || !dateTo) {
+      alert("Пожалуйста, выберите даты.");
+      return;
+    }
+
+    if (region !== null && !organization) {
+      alert("Пожалуйста, выберите организацию.");
       return;
     }
 
@@ -82,14 +95,20 @@ export default function Home() {
     setEcgData(null);
 
     try {
-      const response = await axios.get<ECGData[]>(
-        `https://client.sapatelemed.kz/ecgList/api/ECGResults/${organization}/${formattedDateFrom}/${formattedDateTo}`,
-        {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        }
-      );
+      let url = "";
+
+      if (organization) {
+        url = `https://client.sapatelemed.kz/ecgList/api/ECGResults/${organization}/${formattedDateFrom}/${formattedDateTo}`;
+      } else {
+        url = `https://client.sapatelemed.kz/ecgList/api/ECGResults/${formattedDateFrom}/${formattedDateTo}`;
+      }
+
+      const response = await axios.get<ECGData[]>(url, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+
       setEcgData(response.data);
     } catch (error) {
       console.error("Error fetching ECG data:", error);
@@ -98,8 +117,15 @@ export default function Home() {
     }
   };
 
-  const calculateAge = (birthDate: string): number => {
-    const birthYear = parseInt(birthDate.split("/")[2], 10);
+  const calculateAge = (birthDate: string | null): number => {
+    if (!birthDate) {
+      return 0; // Return 0 or handle the missing data case appropriately
+    }
+    const parts = birthDate.split("/");
+    if (parts.length !== 3) {
+      return 0; // Handle incorrect date format gracefully
+    }
+    const birthYear = parseInt(parts[2], 10);
     const currentYear = new Date().getFullYear();
     return currentYear - birthYear;
   };
@@ -107,14 +133,14 @@ export default function Home() {
   // Transform data to include age
   const transformedData = ecgData
     ? ecgData.map((item) => ({
-        age: calculateAge(item.bDate),
+        age: calculateAge(item.bDate || ""), // Ensure a fallback if bDate is null
         ecgDescription: item.ecgDescription,
       }))
     : [];
 
   return (
     <div className={styles.pageWrapper}>
-      <h1 className={styles.title}>ЭКГ-скриннинг "SapaTelemed"</h1>
+      <h1 className={styles.title}>ЭКГ-скриннинг</h1>
 
       <div className={styles.selectorContainer}>
         <RegionOrganizationSelector
@@ -123,6 +149,9 @@ export default function Home() {
           organization={organization}
           setOrganization={setOrganization}
         />
+        {showRegionNote && (
+          <p className={styles.regionNote}>*Выберите при необходимости</p>
+        )}
 
         <div className={styles.datePickers}>
           <div className={styles.datePickerItem}>
@@ -177,7 +206,11 @@ export default function Home() {
           onClick={fetchAllGraphsData}
           disabled={isLoading}
         >
-          {isLoading ? "Загрузка..." : "Получить результаты"}
+          {isLoading
+            ? "Загрузка..."
+            : organization
+            ? "Получить результаты для организации"
+            : "Получить все результаты"}
         </button>
       </div>
 
@@ -187,22 +220,22 @@ export default function Home() {
           <p>Загрузка данных...</p>
         </div>
       ) : ecgData && ecgData.length === 0 ? (
-        <p className={styles.noDataMessage}>
-          Нет данных для отображения.
-        </p>
+        <p className={styles.noDataMessage}>Нет данных для отображения.</p>
       ) : ecgData ? (
         <>
-          <h2 className={styles.sectionTitle}>Общее</h2>
-          <div className={styles.allGraphsContainer}>
-            <div className={styles.graphCard}>
-              <GraphFive ecgData={ecgData} />
-            </div>
-            <div className={styles.graphCard}>
-              <GraphSix ecgData={transformedData} />
-            </div>
-          </div>
+          {organization && (
+            <>
+              <div className={styles.allGraphsContainer}>
+                <div className={styles.graphCard}>
+                  <GraphFive ecgData={ecgData} />
+                </div>
+                <div className={styles.graphCard}>
+                  <GraphSix ecgData={transformedData} />
+                </div>
+              </div>
+            </>
+          )}
 
-          <h2 className={styles.sectionTitle}>Детально</h2>
           <div className={styles.allGraphsContainer}>
             <div className={styles.graphCard}>
               <GraphOne ecgData={ecgData} />
@@ -223,9 +256,7 @@ export default function Home() {
           </div>
         </>
       ) : (
-        <p className={styles.noDataMessage}>
-          Пожалуйста, выберите параметры и нажмите "Получить результаты".
-        </p>
+        <p className={styles.noDataMessage}>Пожалуйста, выберите параметры и нажмите "Получить результаты".</p>
       )}
     </div>
   );

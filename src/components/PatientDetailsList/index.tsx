@@ -2,8 +2,15 @@ import React, { useState } from "react";
 import styles from "./index.module.css";
 
 // Helper function to calculate age
-const calculateAge = (birthDate: string): number => {
-  const birth = new Date(birthDate.split("/").reverse().join("-"));
+const calculateAge = (birthDate: string | null): number => {
+  if (!birthDate) {
+    return 0; // Default value for missing birthDate
+  }
+  const parts = birthDate.split("/");
+  if (parts.length !== 3) {
+    return 0; // Handle incorrect date format gracefully
+  }
+  const birth = new Date(parts.reverse().join("-"));
   const now = new Date();
   let age = now.getFullYear() - birth.getFullYear();
   const monthDiff = now.getMonth() - birth.getMonth();
@@ -12,6 +19,7 @@ const calculateAge = (birthDate: string): number => {
   }
   return age;
 };
+
 
 // Conditions lists
 const redConditions = [
@@ -25,25 +33,28 @@ const redConditions = [
   "Желудочковые экстрасистолы (плитопные ЖЭС, ранние ЖЭС по типу R на Т)",
   "Синдром бругада",
   "Long QT",
+  "аритмия",
+  "Синусовая тахикардия",
+  "Синусовая аритмия",
+  "AV-блокада",
+  "AV блокада",
+  "БНП",
+  "ФП",
+  "Экстрасистолы",
+  "CLC",
+  "Синдром WPW",
+  "LongQT",
+  "Пароксизмальная ЖТ",
+  "Пароксизмальная НЖТ",
 ];
 
 const yellowConditions = [
   "Синусовая брадикардия",
-  "Синусовая тахикардия",
-  "Синусовая аритмия",
   "Фибрилляция (мерцание) предсердий",
   "нормосистолическая форма",
   "тахисистолическая форма",
   "Трепетание предсердий, правильная форма",
   "Трепетание предсердий, неправильная форма",
-  "Экстрасистолия наджелудочковая",
-  "Экстрасистолия желудочковая",
-  "единичные экстрасистолы",
-  "парные экстрасистолы",
-  "групповые экстрасистолы",
-  "вставочные экстрасистолы",
-  "аллоритмия",
-  "Политопная экстрасистолия",
   "Пароксизмальная тахикардия наджелудочковая",
   "Желудочковая тахикардия",
   "Синдром Фридерика",
@@ -118,8 +129,8 @@ const PatientDetailsList: React.FC<{ ecgData: any[] }> = ({ ecgData }) => {
       <h2 className={styles.patientListTitle}>Список пациентов</h2>
       <div className={styles.filterButtons}>
         <button onClick={() => setFilter(null)}>Все</button>
-        <button onClick={() => setFilter("red")}>Только красные</button>
-        <button onClick={() => setFilter("yellow")}>Только желтые</button>
+        <button onClick={() => setFilter("red")}>Аритмии</button>
+        <button onClick={() => setFilter("yellow")}>С патологией</button>
       </div>
       {filteredData.length > 0 ? (
         <table className={styles.patientTable}>
@@ -141,7 +152,7 @@ const PatientDetailsList: React.FC<{ ecgData: any[] }> = ({ ecgData }) => {
                   {new Date(patient.ecgDate).toLocaleDateString()} {" "}
                   {new Date(patient.ecgDate).toLocaleTimeString("en-GB")} {" "}
                 </td>
-                <td>{calculateAge(patient.bDate)}</td>
+                <td>{patient.bDate ? calculateAge(patient.bDate) : "Неизвестно"}</td>
                 <td>{patient.sex}</td>
                 <td>{patient.iin}</td>
                 <td>{patient.ecgDescription}</td>

@@ -55,7 +55,7 @@ const GraphFive: React.FC<GraphFiveProps> = ({ ecgData }) => {
             counts.men.withoutArrhythmia,
             counts.men.withArrhythmia,
           ],
-          backgroundColor: ["#ff6384", "#ff6384AA", "#36a2eb", "#36a2ebAA"],
+          backgroundColor: ["#ff63c5", "#ff63c5AA", "#36c0eb", "#36c0ebAA"],
           hoverOffset: 5,
         },
       ],
