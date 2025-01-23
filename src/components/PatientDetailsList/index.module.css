@@ -68,29 +68,29 @@
   box-shadow: 0 0 0 3px rgba(66, 153, 225, 0.6);
 }
 
-.filterButtons button:nth-child(1) {
+/* .filterButtons button:nth-child(1) {
   background-color: #2196f3;
   color: #fff;
 }
 
 .filterButtons button:nth-child(1):hover {
   background-color: #1976d2;
-}
+} */
 
-.filterButtons button:nth-child(3) {
+.filterButtons button:nth-child(2) {
   background-color: #f44336;
   color: #fff;
 }
 
-.filterButtons button:nth-child(3):hover {
+.filterButtons button:nth-child(2):hover {
   background-color: #d32f2f;
 }
 
-.filterButtons button:nth-child(2) {
+.filterButtons button:nth-child(1) {
   background-color: #ffeb3b;
   color: #000;
 }
 
-.filterButtons button:nth-child(2):hover {
+.filterButtons button:nth-child(1):hover {
   background-color: #fdd835;
 }

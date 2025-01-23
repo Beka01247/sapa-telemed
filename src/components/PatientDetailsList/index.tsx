@@ -126,9 +126,8 @@ const PatientDetailsList: React.FC<{ ecgData: any[] }> = ({ ecgData }) => {
 
   return (
     <div className={styles.scrollableContainer}>
-      <h2 className={styles.patientListTitle}>Список пациентов</h2>
+      <h2 className={styles.patientListTitle}>Список обследованных пациентов</h2>
       <div className={styles.filterButtons}>
-        <button onClick={() => setFilter(null)}>Все</button>
         <button onClick={() => setFilter("yellow")}>С патологией (всего)</button>
         <button onClick={() => setFilter("red")}>Аритмии</button>
       </div>

@@ -221,19 +221,6 @@ export default function Home() {
         <p className={styles.noDataMessage}>Нет данных для отображения.</p>
       ) : ecgData ? (
         <>
-          {organization && (
-            <>
-              <div className={styles.allGraphsContainer}>
-                <div className={styles.graphCard}>
-                  <GraphFive ecgData={ecgData} />
-                </div>
-                <div className={styles.graphCard}>
-                  <GraphSix ecgData={transformedData} />
-                </div>
-              </div>
-            </>
-          )}
-
           <div className={styles.allGraphsContainer}>
             <div className={styles.graphCard}>
               <GraphOne ecgData={ecgData} />
@@ -248,6 +235,18 @@ export default function Home() {
               <GraphFour ecgData={ecgData} />
             </div>
           </div>
+          {organization && (
+            <>
+              <div className={styles.allGraphsContainer}>
+                <div className={styles.graphCard}>
+                  <GraphFive ecgData={ecgData} />
+                </div>
+                <div className={styles.graphCard}>
+                  <GraphSix ecgData={transformedData} />
+                </div>
+              </div>
+            </>
+          )}
 
           <div className={styles.patientListWrapper}>
             <PatientDetailsList ecgData={ecgData} />
