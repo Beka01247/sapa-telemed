@@ -4,11 +4,13 @@
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  max-width: 900px;
-  padding: 20px;
+  max-width: 1200px; /* Increase max width */
+  padding: 40px; /* Add more padding */
+  width: 100%;
 }
 
 .graph-container-v3 canvas {
   max-height: 100%;
-  width: 100% !important;
+  height: 500px; /* Increase height */
+  width: 1000px;
 }

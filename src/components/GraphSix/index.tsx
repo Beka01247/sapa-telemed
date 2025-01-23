@@ -53,14 +53,13 @@ const GraphSix: React.FC<GraphSixProps> = ({ ecgData }) => {
         {
           label: "С аритмией",
           data: Object.values(ageGroups).map((group) => group.withArrhythmia),
-          backgroundColor: "#612d9b",
+          backgroundColor: "#56324b",
         },
         {
           label: "Без аритмии",
           data: Object.values(ageGroups).map((group) => group.total - group.withArrhythmia),
-          backgroundColor: "#c3393c",
+          backgroundColor: "#B784A7",
           borderWidth: 1,
-          borderColor: "#000",
         },
       ],
     });

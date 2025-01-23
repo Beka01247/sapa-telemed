@@ -61,7 +61,7 @@ const GraphTwo: React.FC<GraphTwoProps> = ({ ecgData }) => {
             "#00c853",
             "#00b8d4",
             "#ffab00",
-            "#d50000",
+            "#ffaeae",
             "#4a148c",
             "#2e7d32",
             "#01579b",
@@ -118,102 +118,6 @@ const GraphTwo: React.FC<GraphTwoProps> = ({ ecgData }) => {
                     const percentage = ((value / total) * 100).toFixed(1);
                     return percentage === "0.0" ? "" : `${percentage}%`; // Skip if percentage is 0%
                   },
-                  font: {
-                    size: 12,
-                    weight: "bold",
-                  },
-                  color: "#333",
-                },
-              },
-              scales: {
-                x: {
-                  ticks: {
-                    maxRotation: 45,
-                    minRotation: 45,
-                    color: "#4F4F4F",
-                    font: {
-                      size: 14,
-                    },
-                  },
-                  grid: {
-                    display: false, // Hide gridlines on the x-axis
-                  },
-                },
-                y: {
-                  title: {
-                    display: true,
-                    text: "Количество случаев",
-                    font: {
-                      size: 16,
-                      weight: "bold",
-                    },
-                    color: "#4F4F4F",
-                  },
-                  ticks: {
-                    color: "#4F4F4F",
-                    font: {
-                      size: 14,
-                    },
-                  },
-                  grid: {
-                    color: "#e0e0e0", // Subtle gridline color
-                  },
-                },
-              },
-              maintainAspectRatio: false, // Make the chart responsive
-            }}
-            plugins={[ChartDataLabels]} // Add ChartDataLabels plugin
-            height={400}
-            width={800}
-          />
-        </div>
-      )}
-    </div>
-  );
-  
-  return (
-    <div className="graph-container">
-      <h2 className="graph-title">Выявленные аритмии</h2>
-
-      {!ecgData.length ? (
-        <p className="no-data-label">Нет данных для отображения.</p>
-      ) : !graphData ? (
-        <div className="loading-spinner-container">
-          <div className="loading-spinner"></div>
-          <p>Обработка данных...</p>
-        </div>
-      ) : (
-        <div className="graph-display">
-          <Bar
-            data={graphData}
-            options={{
-              plugins: {
-                legend: {
-                  display: false, // Remove legend if not needed
-                },
-                tooltip: {
-                  backgroundColor: "#ffffff",
-                  titleColor: "#333",
-                  bodyColor: "#4F4F4F",
-                  borderColor: "#e0e0e0",
-                  borderWidth: 1,
-                },
-                datalabels: {
-                  display: true, // Enable percentage labels
-                  align: "top",
-                  anchor: "end",
-                  formatter: (value, context) => {
-                    // Safely reduce the data to calculate the total
-                    const total = context.chart.data.datasets[0].data
-                      .map((val) => (typeof val === "number" ? val : 0)) // Ensure only numeric values
-                      .reduce((sum, val) => sum + val, 0); // Safely sum up numbers with an initial value of 0
-                  
-                    if (total === 0) return ""; // Skip if total is 0 to avoid division by zero
-                  
-                    const percentage = ((value / total) * 100).toFixed(1);
-                    return percentage === "0.0" ? "" : `${percentage}%`; // Skip if percentage is 0%
-                  },
-                  
                   font: {
                     size: 12,
                     weight: "bold",
