@@ -129,8 +129,8 @@ const PatientDetailsList: React.FC<{ ecgData: any[] }> = ({ ecgData }) => {
       <h2 className={styles.patientListTitle}>Список пациентов</h2>
       <div className={styles.filterButtons}>
         <button onClick={() => setFilter(null)}>Все</button>
+        <button onClick={() => setFilter("yellow")}>С патологией (всего)</button>
         <button onClick={() => setFilter("red")}>Аритмии</button>
-        <button onClick={() => setFilter("yellow")}>С патологией</button>
       </div>
       {filteredData.length > 0 ? (
         <table className={styles.patientTable}>

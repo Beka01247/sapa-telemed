@@ -155,12 +155,12 @@ const GraphOne: React.FC<GraphOneProps> = ({ ecgData }) => {
           backgroundColor: gradientColors("#81c784"),
         },
         {
-          label: "С патологией",
+          label: "С патологией (всего)",
           data: yellowData,
           backgroundColor: gradientColors("#fff176"),
         },
         {
-          label: "Аритмия",
+          label: "Аритмии",
           data: redData,
           backgroundColor: gradientColors("#e57373"),
         },
