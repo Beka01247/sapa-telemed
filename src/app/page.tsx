@@ -140,7 +140,7 @@ export default function Home() {
 
   return (
     <div className={styles.pageWrapper}>
-      <h1 className={styles.title}>ЭКГ-скриннинг</h1>
+      <h1 className={styles.title}>ЭКГ-скрининг «Sapa Telemed»</h1>
 
       <div className={styles.selectorContainer}>
         <RegionOrganizationSelector
@@ -149,10 +149,8 @@ export default function Home() {
           organization={organization}
           setOrganization={setOrganization}
         />
-        {showRegionNote && (
-          <p className={styles.regionNote}>*Выберите при необходимости</p>
-        )}
-
+        <br />
+        <h2 className="dateLabel">Данные за период</h2>
         <div className={styles.datePickers}>
           <div className={styles.datePickerItem}>
             <label className={styles.datePickerLabel}>От (дата):</label>

@@ -237,47 +237,35 @@ const RegionOrganizationSelector: React.FC<RegionOrganizationSelectorProps> = ({
   };
 
   return (
-    <div>
-      <div>
-        <label htmlFor="region" className="label">Выберите регион: </label>
-        <select
-          id="region"
-          value={region || ""}
-          onChange={handleRegionChange}
-          className="select"
-        >
-          <option value="" disabled>
-            -- Выберите регион --
-          </option>
-          {regions.map((region) => (
-            <option key={region.id} value={region.id}>
-              {region.region_name}
-            </option>
-          ))}
-        </select>
-      </div>
-      <br />
-      {region && (
-        <div>
-          <label htmlFor="organization" className="label">Выберите организацию: </label>
-          <select
-            id="organization"
-            value={organization}
-            onChange={handleOrganizationChange}
-            className="select"
-          >
-            <option value="" disabled>
-              -- Выберите организацию --
-            </option>
-            {filteredOrganizations.map((org) => (
-              <option key={org.site_name} value={org.site_name}>
-                {org.commercial_name}
-              </option>
-            ))}
-          </select>
-        </div>
-      )}
-    </div>
+    <div className="region-organization-container">
+  <div className="region-container">
+    <label className="label">Страна:</label>
+    <div className="fixed-region">Республика Казахстан</div>
+  </div>
+
+  <div className="region-dropdown">
+    <label htmlFor="region" className="label">Область / город:</label>
+    <select id="region" value={region || ""} onChange={handleRegionChange} className="select">
+      <option value="" disabled>-- Выберите область/город -</option>
+      {regions.map((region) => (
+        <option key={region.id} value={region.id}>{region.region_name}</option>
+      ))}
+    </select>
+    <p className="note">* Выбрать при необходимости</p>
+  </div>
+
+  <div className="organization-dropdown">
+    <label htmlFor="organization" className="label">Организация:</label>
+    <select id="organization" value={organization} onChange={handleOrganizationChange} className="select">
+      <option value="" disabled>-- Выберите организацию --</option>
+      {filteredOrganizations.map((org) => (
+        <option key={org.site_name} value={org.site_name}>{org.commercial_name}</option>
+      ))}
+    </select>
+    <p className="note">* Выбрать при необходимости</p>
+  </div>
+</div>
+
   );
   
 };

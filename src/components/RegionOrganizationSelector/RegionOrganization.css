@@ -28,3 +28,55 @@
   max-width: 300px; /* Limit the max width of the dropdown */
   text-align: center; /* Center text in the dropdown */
 }
+.region-organization-container {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 20px;
+  align-items: flex-start;
+}
+
+.region-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.fixed-region {
+  font-size: 18px;
+  padding: 10px 20px;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+  width: 250px;
+  text-align: center;
+}
+
+.region-dropdown, .organization-dropdown {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  position: relative;
+}
+
+.label {
+  font-weight: bold;
+  margin-bottom: 5px;
+  text-align: center;
+}
+
+.select {
+  padding: 10px;
+  font-size: 16px;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+  width: 250px;
+  text-align: center;
+}
+
+.note {
+  font-size: 12px;
+  color: #666;
+  position: absolute;
+  bottom: -20px;
+  text-align: center;
+}
