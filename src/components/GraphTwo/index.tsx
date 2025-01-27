@@ -10,9 +10,10 @@ interface ECGData {
 
 interface GraphTwoProps {
   ecgData: ECGData[];
+  setFilteredPatients: (patients: ECGData[]) => void;
 }
 
-const GraphTwo: React.FC<GraphTwoProps> = ({ ecgData }) => {
+const GraphTwo: React.FC<GraphTwoProps> = ({ ecgData, setFilteredPatients }) => {
   const [graphData, setGraphData] = useState<any>(null);
 
   useEffect(() => {
@@ -75,6 +76,19 @@ const GraphTwo: React.FC<GraphTwoProps> = ({ ecgData }) => {
       ],
     });
   };
+
+  const handleBarClick = (elements: any) => {
+    if (elements.length === 0) return;
+  
+    const index = elements[0].index;
+    const condition = graphData.labels[index];
+  
+    const filteredPatients = ecgData
+      .filter((record) => record.ecgDescription.toLowerCase().includes(condition.toLowerCase()))
+      .map((patient) => ({ ...patient, severity: condition }));
+  
+    setFilteredPatients(filteredPatients);
+  };
   
   return (
     <div className="graph-container">
@@ -112,18 +126,20 @@ const GraphTwo: React.FC<GraphTwoProps> = ({ ecgData }) => {
                     const total = context.chart.data.datasets[0].data
                       .map((val) => (typeof val === "number" ? val : 0)) // Ensure only numeric values
                       .reduce((sum, val) => sum + val, 0); // Safely sum up numbers
-  
+                
                     if (total === 0) return ""; // Skip if total is 0 to avoid division by zero
-  
+                
                     const percentage = ((value / total) * 100).toFixed(1);
-                    return percentage === "0.0" ? "" : `${percentage}%`; // Skip if percentage is 0%
+                    const absoluteValue = value; // Get the count itself
+                    return `${percentage}% (${absoluteValue})`; // Display percentage and count
                   },
                   font: {
-                    size: 12,
+                    size: 10,
                     weight: "bold",
                   },
                   color: "#333",
                 },
+                
               },
               scales: {
                 x: {
@@ -161,6 +177,7 @@ const GraphTwo: React.FC<GraphTwoProps> = ({ ecgData }) => {
                 },
               },
               maintainAspectRatio: false, // Make the chart responsive
+              onClick: (event, elements) => handleBarClick(elements),
             }}
             plugins={[ChartDataLabels]} // Add ChartDataLabels plugin
             height={400}

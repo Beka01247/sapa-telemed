@@ -4,11 +4,11 @@ import styles from "./index.module.css";
 // Helper function to calculate age
 const calculateAge = (birthDate: string | null): number => {
   if (!birthDate) {
-    return 0; // Default value for missing birthDate
+    return 0;
   }
   const parts = birthDate.split("/");
   if (parts.length !== 3) {
-    return 0; // Handle incorrect date format gracefully
+    return 0;
   }
   const birth = new Date(parts.reverse().join("-"));
   const now = new Date();
@@ -20,51 +20,39 @@ const calculateAge = (birthDate: string | null): number => {
   return age;
 };
 
-
 // Conditions lists
 const redConditions = [
-  "Брадиаритмии",
-  "Синдром слабости синусового узла (остановка синусового узла)",
-  "AV-блокада 2-й степени типа Мобитц",
-  "Полная AV-блокада",
-  "Тахиаритмии",
-  "Пароксизмальная желудочковая тахикардия",
-  "ЖТ типа «пируэт» torsades de pointes",
-  "Желудочковые экстрасистолы (плитопные ЖЭС, ранние ЖЭС по типу R на Т)",
-  "Синдром бругада",
-  "Long QT",
-  "аритмия",
-  "Синусовая тахикардия",
-  "Синусовая аритмия",
-  "AV-блокада",
-  "AV блокада",
-  "БНП",
-  "ФП",
-  "Экстрасистолы",
-  "CLC",
-  "Синдром WPW",
-  "LongQT",
-  "Пароксизмальная ЖТ",
-  "Пароксизмальная НЖТ",
+  "Политопная экстрасистолия",
+  "Пароксизмальная тахикардия наджелудочковая",
+  "Желудочковая тахикардия",
+  "Синдром Фридерика",
+  "Фибрилляция желудочков",
+  "Атриовентрикулярная блокада 3-й степени (полная)",
+  "Синдром удлиненного Q-T",
 ];
 
-const yellowConditions = [
+const orangeConditions = [
   "Синусовая брадикардия",
+  "Синусовая тахикардия",
+  "Синусовая аритмия",
   "Фибрилляция (мерцание) предсердий",
   "нормосистолическая форма",
   "тахисистолическая форма",
   "Трепетание предсердий, правильная форма",
   "Трепетание предсердий, неправильная форма",
-  "Пароксизмальная тахикардия наджелудочковая",
-  "Желудочковая тахикардия",
-  "Синдром Фридерика",
-  "Фибрилляция желудочков",
+  "Экстрасистолия наджелудочковая",
+  "Экстрасистолия желудочковая",
+  "единичные экстрасистолы",
+  "парные экстрасистолы",
+  "групповые экстрасистолы",
+  "вставочные экстрасистолы",
+  "аллоритмия",
   "Искусственный водитель ритма",
+  "Нарушения проводимости",
   "Синоатриальная блокада неполная",
   "Синоатриальная блокада полная",
   "Атриовентрикулярная блокада 1-й степени",
   "Атриовентрикулярная блокада 2-й степени",
-  "Атриовентрикулярная блокада 3-й степени (полная)",
   "Неполная блокада правой ветви пучка Гиса",
   "Полная блокада правой ветви пучка Гиса",
   "Блокада левой ножки пучка Гиса",
@@ -72,27 +60,24 @@ const yellowConditions = [
   "Блокада задней левой ветви пучка Гиса",
   "Синдром WPW",
   "Синдром укороченного PQ",
-  "Ишемия миокарда",
-  "Повреждение миокарда",
-  "субэндокардиальное",
-  "трансмуральное",
-  "Инфаркт миокарда с зубцом Q",
-  "Инфаркт миокарда без зубца Q",
-  "острый период",
-  "подострый период",
-  "рубцовые изменения",
-  "очаговые изменения миокарда",
-  "Признаки хронической коронарной недостаточности",
+];
+
+const yellowConditions = [
+  "Инфаркт миокарда без зубца Q рубцовые изменения",
+  "Инфаркт миокарда без зубца Q очаговые изменения миокарда",
+  "Признаки хронической коронарной недостаточности (с учетом клиники)",
+  "Локализация",
   "передне-перегородочная",
   "передне-верхушечная",
   "боковая",
   "задне-нижняя",
   "задне-базальная",
+  "Некоронарогенные изменения миокарда",
   "Синдром ранней реполяризации желудочков",
-  "Синдром удлиненного Q-T",
   "Диффузные изменения процессов реполяризации",
   "Признаки дигиталисной интоксикации",
   "Легочное сердце (SIQIII)",
+  "Гипертрофии",
   "Гипертрофия правого предсердия",
   "Гипертрофия левого предсердия",
   "Гипертрофия правого желудочка",
@@ -100,8 +85,24 @@ const yellowConditions = [
   "С нарушением процессов реполяризации",
 ];
 
+const blackConditions = [
+  "Нарушение коронарного кровообращения",
+  "Ишемия миокарда",
+  "Повреждение миокарда субэндокардиальное",
+  "Повреждение миокарда трансмуральное",
+  "Инфаркт миокарда с зубцом Q",
+  "Инфаркт миокарда без зубца Q острый период",
+  "Инфаркт миокарда без зубца Q подострый период",
+];
+
 // Patient Details Component
-const PatientDetailsList: React.FC<{ ecgData: any[] }> = ({ ecgData }) => {
+interface PatientDetailsListProps {
+  ecgData: any[];
+  filteredPatients: any[] | null;
+  setFilteredPatients: (patients: any[] | null) => void;
+}
+
+const PatientDetailsList: React.FC<PatientDetailsListProps> = ({ ecgData, filteredPatients, setFilteredPatients }) => {
   const [filter, setFilter] = useState<string | null>(null);
 
   const filteredData = ecgData.filter((patient) => {
@@ -110,28 +111,40 @@ const PatientDetailsList: React.FC<{ ecgData: any[] }> = ({ ecgData }) => {
       patient.severity = "red";
       return filter === null || filter === "red";
     }
+    if (orangeConditions.some((condition) => description.includes(condition.toLowerCase()))) {
+      patient.severity = "orange";
+      return filter === null || filter === "orange";
+    }
     if (yellowConditions.some((condition) => description.includes(condition.toLowerCase()))) {
       patient.severity = "yellow";
       return filter === null || filter === "yellow";
     }
+    if (blackConditions.some((condition) => description.includes(condition.toLowerCase()))) {
+      patient.severity = "black";
+      return filter === null || filter === "black";
+    }
     return false;
   });
 
-  // Sort by severity (red first, then yellow)
+  // Sort by severity (red, orange, black, yellow)
   filteredData.sort((a, b) => {
-    if (a.severity === "red" && b.severity === "yellow") return -1;
-    if (a.severity === "yellow" && b.severity === "red") return 1;
-    return 0;
+    const order = ["red", "orange", "black", "yellow"];
+    return order.indexOf(a.severity) - order.indexOf(b.severity);
   });
+
+  const dataToDisplay = filteredPatients || filteredData;
 
   return (
     <div className={styles.scrollableContainer}>
       <h2 className={styles.patientListTitle}>Список обследованных пациентов</h2>
       <div className={styles.filterButtons}>
-        <button onClick={() => setFilter("yellow")}>С патологией (всего)</button>
-        <button onClick={() => setFilter("red")}>Аритмии</button>
+        <button onClick={() => { setFilter(null); setFilteredPatients(null); }}>Все</button>
+        <button onClick={() => { setFilter("yellow"); setFilteredPatients(null); }}>Патологии</button>
+        <button onClick={() => { setFilter("orange"); setFilteredPatients(null); }}>Аритмии</button>
+        <button onClick={() => { setFilter("red"); setFilteredPatients(null); }}>Жизнеугрожающие Аритмии</button>
+        <button onClick={() => { setFilter("black"); setFilteredPatients(null); }}>ОКС</button>
       </div>
-      {filteredData.length > 0 ? (
+      {dataToDisplay.length > 0 ? (
         <table className={styles.patientTable}>
           <thead>
             <tr>
@@ -145,43 +158,57 @@ const PatientDetailsList: React.FC<{ ecgData: any[] }> = ({ ecgData }) => {
             </tr>
           </thead>
           <tbody>
-            {filteredData.map((patient, index) => (
+            {dataToDisplay.map((patient, index) => (
               <tr key={index}>
                 <td>
-                  {new Date(patient.ecgDate).toLocaleDateString()} {" "}
-                  {new Date(patient.ecgDate).toLocaleTimeString("en-GB")} {" "}
+                  {new Date(patient.ecgDate).toLocaleDateString()}{" "}
+                  {new Date(patient.ecgDate).toLocaleTimeString("en-GB")}
                 </td>
                 <td>{patient.bDate ? calculateAge(patient.bDate) : "Неизвестно"}</td>
                 <td>{patient.sex}</td>
                 <td>{patient.iin}</td>
                 <td>{patient.ecgDescription}</td>
                 <td>
-                  <a
-                    href={patient.ecgLink}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                  >
+                  <a href={patient.ecgLink} target="_blank" rel="noopener noreferrer">
                     Просмотр
                   </a>
                 </td>
                 <td>
-                  <span
-                    style={{
-                      display: "inline-block",
-                      width: "18px",
-                      height: "18px",
-                      borderRadius: "50%",
-                      backgroundColor: patient.severity === "red" ? "#f44336" : "#ffeb3b",
-                      margin: "16px",
-                    }}
-                  ></span>
-                </td>
+  {["red", "orange", "yellow", "black", "avBlock"].includes(patient.severity) ? (
+    <span
+      style={{
+        display: "inline-block",
+        width: "18px",
+        height: "18px",
+        borderRadius: "50%",
+        backgroundColor:
+          patient.severity === "red"
+            ? "#f44336"
+            : patient.severity === "orange"
+            ? "#ff9800"
+            : patient.severity === "yellow"
+            ? "#ffeb3b"
+            : patient.severity === "black"
+            ? "#424242"
+            : "#81c784",
+        margin: "16px",
+      }}
+    ></span>
+  ) : (
+    // Display label directly if it's not a color
+    <span>{patient.severity}</span>
+  )}
+</td>
+
+
               </tr>
             ))}
           </tbody>
         </table>
       ) : (
-        <p style={{ textAlign: "center", color: "#000", marginTop: "1rem" }}>Нет данных для отображения</p>
+        <p style={{ textAlign: "center", color: "#000", marginTop: "1rem" }}>
+          Нет данных для отображения
+        </p>
       )}
     </div>
   );

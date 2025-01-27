@@ -34,6 +34,8 @@ interface ECGData {
   ecgLink: string;
 }
 
+
+
 export default function Home() {
   const [region, setRegion] = useState<number | null>(null);
   const [organization, setOrganization] = useState<string>("");
@@ -43,6 +45,7 @@ export default function Home() {
 
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [ecgData, setEcgData] = useState<ECGData[] | null>(null);
+  const [filteredPatients, setFilteredPatients] = useState<any[] | null>(null);
 
   useEffect(() => {
     if (region !== null) {
@@ -226,13 +229,13 @@ export default function Home() {
               <GraphOne ecgData={ecgData} />
             </div>
             <div className={styles.graphCard}>
-              <GraphTwo ecgData={ecgData} />
+              <GraphTwo ecgData={ecgData} setFilteredPatients={setFilteredPatients} />
             </div>
             <div className={styles.graphCard}>
-              <GraphThree ecgData={ecgData} />
+              <GraphThree ecgData={ecgData} setFilteredPatients={setFilteredPatients} />
             </div>
             <div className={styles.graphCard}>
-              <GraphFour ecgData={ecgData} />
+              <GraphFour ecgData={ecgData} setFilteredPatients={setFilteredPatients} />
             </div>
           </div>
           {organization && (
@@ -249,7 +252,7 @@ export default function Home() {
           )}
 
           <div className={styles.patientListWrapper}>
-            <PatientDetailsList ecgData={ecgData} />
+            <PatientDetailsList ecgData={ecgData} filteredPatients={filteredPatients} setFilteredPatients={setFilteredPatients} />
           </div>
         </>
       ) : (

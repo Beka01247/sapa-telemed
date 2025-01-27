@@ -10,9 +10,10 @@ interface ECGData {
 
 interface GraphFourProps {
   ecgData: ECGData[];
+  setFilteredPatients: (patients: ECGData[] | null) => void; // Pass filtered data to parent
 }
 
-const GraphFour: React.FC<GraphFourProps> = ({ ecgData }) => {
+const GraphFour: React.FC<GraphFourProps> = ({ ecgData, setFilteredPatients }) => {
   const [chartDataBLNPG, setChartDataBLNPG] = useState<any>(null);
   const [chartDataBRNPG, setChartDataBRNPG] = useState<any>(null);
 
@@ -77,6 +78,35 @@ const GraphFour: React.FC<GraphFourProps> = ({ ecgData }) => {
     });
   };
 
+  const handleSliceClick = (elements: any, chartData: any, side: string) => {
+    if (elements.length === 0) return;
+  
+    const index = elements[0].index; // Get the index of the clicked slice
+    const label = chartData.labels[index]; // Get the label of the slice (e.g., "ПБЛНПГ")
+  
+    // Filter ecgData based on the clicked label
+    const filteredPatients = ecgData.filter((record) => {
+      const desc = record.ecgDescription.toLowerCase();
+      if (side === "BLNPG") {
+        if (label === "ПБЛНПГ" && desc.includes("полная блокада левой ножки пучка гиса")) return true;
+        if (label === "НБЛНПГ" && desc.includes("неполная блокада левой ножки пучка гиса")) return true;
+      } else if (side === "BRNPG") {
+        if (label === "ПБПНПГ" && desc.includes("полная блокада правой ножки пучка гиса")) return true;
+        if (label === "НБПНПГ" && desc.includes("неполная блокада правой ножки пучка гиса")) return true;
+      }
+      return false;
+    });
+  
+    // Map the label as severity for display in the status column
+    const labeledPatients = filteredPatients.map((patient) => ({
+      ...patient,
+      severity: label, // Set the label as the severity
+    }));
+  
+    setFilteredPatients(labeledPatients); // Pass filtered and labeled data to the table
+  };
+  
+
   return (
     <div className="graph-container">
       <h2 className="graph-title" style={{ fontWeight: "bold", color: "#333" }}>
@@ -117,7 +147,7 @@ const GraphFour: React.FC<GraphFourProps> = ({ ecgData }) => {
 
                       if (total === 0) return "";
                       const percentage = ((value / total) * 100).toFixed(1);
-                      return `${percentage}%`;
+                      return `${percentage}% (${value})`;
                     },
                     color: "#000",
                     font: {
@@ -126,6 +156,7 @@ const GraphFour: React.FC<GraphFourProps> = ({ ecgData }) => {
                     },
                   },
                 },
+                onClick: (event, elements) => handleSliceClick(elements, chartDataBLNPG, "BLNPG"),
               }}
               plugins={[ChartDataLabels]}
             />
@@ -158,7 +189,7 @@ const GraphFour: React.FC<GraphFourProps> = ({ ecgData }) => {
 
                       if (total === 0) return "";
                       const percentage = ((value / total) * 100).toFixed(1);
-                      return `${percentage}%`;
+                      return `${percentage}% (${value})`;
                     },
                     color: "#000",
                     font: {
@@ -167,6 +198,7 @@ const GraphFour: React.FC<GraphFourProps> = ({ ecgData }) => {
                     },
                   },
                 },
+                onClick: (event, elements) => handleSliceClick(elements, chartDataBRNPG, "BRNPG"),
               }}
               plugins={[ChartDataLabels]}
             />
