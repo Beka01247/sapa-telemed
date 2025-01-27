@@ -94,82 +94,84 @@ const GraphFour: React.FC<GraphFourProps> = ({ ecgData }) => {
               БЛНПГ ({chartDataBLNPG?.overallPercentage}%)
             </h3>
             <Doughnut
-              data={chartDataBLNPG}
-              options={{
-                plugins: {
-                  legend: {
-                    display: true,
-                    position: "top",
-                    labels: {
-                      font: {
-                        size: 14,
-                        weight: "bold",
-                      },
-                      color: "#555",
-                    },
-                  },
-                  datalabels: {
-                    display: true,
-                    formatter: (value, context) => {
-                      const total = context.dataset.data
-                        .filter((val): val is number => typeof val === "number")
-                        .reduce((sum, val) => sum + val, 0);
+  data={chartDataBLNPG}
+  options={{
+    plugins: {
+      legend: {
+        display: true,
+        position: "top",
+        labels: {
+          font: {
+            size: 14,
+            weight: "bold",
+          },
+          color: "#555",
+        },
+      },
+      datalabels: {
+        display: true,
+        formatter: (value, context) => {
+          const total = context.dataset.data
+            .filter((val): val is number => typeof val === "number")
+            .reduce((sum, val) => sum + val, 0);
 
-                      if (total === 0) return "";
-                      const percentage = ((value / total) * 100).toFixed(1);
-                      return `${percentage}%`;
-                    },
-                    color: "#000",
-                    font: {
-                      size: 14,
-                      weight: "bold",
-                    },
-                  },
-                },
-              }}
-              plugins={[ChartDataLabels]}
-            />
+          if (total === 0) return "";
+          const percentage = ((value / total) * 100).toFixed(1);
+          return `${percentage}% (${value})`;
+        },
+        color: "#000",
+        font: {
+          size: 14,
+          weight: "bold",
+        },
+      },
+    },
+  }}
+  plugins={[ChartDataLabels]}
+/>
+
           </div>
           <div className="section" style={{ textAlign: "center", width: "45%" }}>
             <h3 style={{ color: "#000", fontWeight: "bold", marginBottom: "1rem" }}>
               БПНПГ ({chartDataBRNPG?.overallPercentage}%)
             </h3>
             <Doughnut
-              data={chartDataBRNPG}
-              options={{
-                plugins: {
-                  legend: {
-                    display: true,
-                    position: "top",
-                    labels: {
-                      font: {
-                        size: 14,
-                        weight: "bold",
-                      },
-                      color: "#555",
-                    },
-                  },
-                  datalabels: {
-                    display: true,
-                    formatter: (value, context) => {
-                      const total = context.dataset.data
-                        .filter((val): val is number => typeof val === "number")
-                        .reduce((sum, val) => sum + val, 0);
+  data={chartDataBRNPG}
+  options={{
+    plugins: {
+      legend: {
+        display: true,
+        position: "top",
+        labels: {
+          font: {
+            size: 14,
+            weight: "bold",
+          },
+          color: "#555",
+        },
+      },
+      datalabels: {
+        display: true,
+        formatter: (value, context) => {
+          const total = context.dataset.data
+            .filter((val): val is number => typeof val === "number")
+            .reduce((sum, val) => sum + val, 0);
 
-                      if (total === 0) return "";
-                      const percentage = ((value / total) * 100).toFixed(1);
-                      return `${percentage}%`;
-                    },
-                    color: "#000",
-                    font: {
-                      size: 14,
-                      weight: "bold",
-                    },
-                  },
-                },
-              }}
-              plugins={[ChartDataLabels]}
-            />
+          if (total === 0) return "";
+          const percentage = ((value / total) * 100).toFixed(1);
+          return `${percentage}% (${value})`;
+        },
+        color: "#000",
+        font: {
+          size: 14,
+          weight: "bold",
+        },
+      },
+    },
+  }}
+  plugins={[ChartDataLabels]}
+/>
+
           </div>
         </div>
       )}

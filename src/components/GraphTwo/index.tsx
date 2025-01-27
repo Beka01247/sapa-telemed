@@ -112,18 +112,20 @@ const GraphTwo: React.FC<GraphTwoProps> = ({ ecgData }) => {
                     const total = context.chart.data.datasets[0].data
                       .map((val) => (typeof val === "number" ? val : 0)) // Ensure only numeric values
                       .reduce((sum, val) => sum + val, 0); // Safely sum up numbers
-  
+                
                     if (total === 0) return ""; // Skip if total is 0 to avoid division by zero
-  
+                
                     const percentage = ((value / total) * 100).toFixed(1);
-                    return percentage === "0.0" ? "" : `${percentage}%`; // Skip if percentage is 0%
+                    const absoluteValue = value; // Get the count itself
+                    return `${percentage}% (${absoluteValue})`; // Display percentage and count
                   },
                   font: {
-                    size: 12,
+                    size: 10,
                     weight: "bold",
                   },
                   color: "#333",
                 },
+                
               },
               scales: {
                 x: {
