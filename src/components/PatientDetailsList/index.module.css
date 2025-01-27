@@ -45,52 +45,50 @@
 .filterButtons {
   display: flex;
   justify-content: center;
-  gap: 1rem;
-  margin-bottom: 1rem;
+  margin-bottom: 16px;
+  gap: 10px; /* Space between buttons */
 }
 
 .filterButtons button {
-  padding: 0.6rem 1.2rem;
-  font-size: 1rem;
-  font-weight: bold;
-  border: none;
-  border-radius: 8px;
+  padding: 10px 20px;
+  border-radius: 5px;
+  font-size: 14px;
   cursor: pointer;
-  transition: background-color 0.3s, transform 0.2s;
+  transition: all 0.3s ease;
+  border: 2px solid black;
 }
 
 .filterButtons button:hover {
-  transform: scale(1.05);
+  opacity: 0.8;
 }
 
 .filterButtons button:focus {
-  outline: none;
-  box-shadow: 0 0 0 3px rgba(66, 153, 225, 0.6);
+  outline: 2px solid #3f51b5; /* Blue outline for focused state */
 }
 
-/* .filterButtons button:nth-child(1) {
-  background-color: #2196f3;
-  color: #fff;
+.filterButtons > button:nth-child(1) {
+  background-color: white; /* Yellow (All) */
+  color: black;
 }
 
-.filterButtons button:nth-child(1):hover {
-  background-color: #1976d2;
-} */
-
-.filterButtons button:nth-child(2) {
-  background-color: #f44336;
-  color: #fff;
+.filterButtons > button:nth-child(2) {
+  background-color: yellow; /* Red (Pathologies) */
+  color: black;
 }
 
-.filterButtons button:nth-child(2):hover {
-  background-color: #d32f2f;
+.filterButtons > button:nth-child(3) {
+  background-color: #ff9800; /* Orange (Arrhythmias) */
+  color: black;
 }
 
-.filterButtons button:nth-child(1) {
-  background-color: #ffeb3b;
-  color: #000;
+.filterButtons > button:nth-child(4) {
+  background-color: #f44336; /* Red (Life-threatening Arrhythmias) */
+  color: white;
 }
 
-.filterButtons button:nth-child(1):hover {
-  background-color: #fdd835;
+.filterButtons > button:nth-child(5) {
+  background-color: #424242; /* Black (ACS) */
+  color: white;
 }
+
+

@@ -10,9 +10,10 @@ interface ECGData {
 
 interface GraphThreeProps {
   ecgData: ECGData[];
+  setFilteredPatients: (patients: any[] | null) => void;
 }
 
-const GraphThree: React.FC<GraphThreeProps> = ({ ecgData }) => {
+const GraphThree: React.FC<GraphThreeProps> = ({ ecgData, setFilteredPatients }) => {
   const [graphData, setGraphData] = useState<any>(null);
 
   useEffect(() => {
@@ -26,14 +27,20 @@ const GraphThree: React.FC<GraphThreeProps> = ({ ecgData }) => {
       "II ст": 0,
       "III ст": 0,
     };
-
+  
     data.forEach((record) => {
       const desc = record.ecgDescription.toLowerCase();
-      if (desc.includes("i ст")) blockCounts["I ст"]++;
-      if (desc.includes("ii ст")) blockCounts["II ст"]++;
-      if (desc.includes("iii ст")) blockCounts["III ст"]++;
+  
+      // Assign patients to the highest-priority condition they match
+      if (desc.includes("iii ст")) {
+        blockCounts["III ст"]++;
+      } else if (desc.includes("ii ст")) {
+        blockCounts["II ст"]++;
+      } else if (desc.includes("i ст")) {
+        blockCounts["I ст"]++;
+      }
     });
-
+  
     setGraphData({
       labels: Object.keys(blockCounts),
       datasets: [
@@ -45,6 +52,27 @@ const GraphThree: React.FC<GraphThreeProps> = ({ ecgData }) => {
       ],
     });
   };
+  
+
+  const handleBarClick = (elements: any) => {
+    if (elements.length === 0) return; // No bar clicked, do nothing
+  
+    const index = elements[0].index; // Get the clicked bar's index
+    const label = graphData.labels[index]; // Retrieve the label for the bar
+  
+    // Filter only if there are matching patients
+    const filtered = ecgData.filter((record) =>
+      record.ecgDescription.toLowerCase().includes(label.toLowerCase())
+    );
+  
+    // Prevent infinite state updates by checking if the filtered data has changed
+    if (filtered.length > 0) {
+      setFilteredPatients(filtered.map((record) => ({ ...record, severity: label })));
+    }
+  };
+  
+  
+  
 
   return (
     <div className="graph-container">
@@ -106,6 +134,7 @@ const GraphThree: React.FC<GraphThreeProps> = ({ ecgData }) => {
         },
       },
     },
+    onClick: (event, elements) => handleBarClick(elements),
   }}
   plugins={[ChartDataLabels]} // Register datalabels plugin
 />

@@ -10,9 +10,10 @@ interface ECGData {
 
 interface GraphTwoProps {
   ecgData: ECGData[];
+  setFilteredPatients: (patients: ECGData[]) => void;
 }
 
-const GraphTwo: React.FC<GraphTwoProps> = ({ ecgData }) => {
+const GraphTwo: React.FC<GraphTwoProps> = ({ ecgData, setFilteredPatients }) => {
   const [graphData, setGraphData] = useState<any>(null);
 
   useEffect(() => {
@@ -74,6 +75,19 @@ const GraphTwo: React.FC<GraphTwoProps> = ({ ecgData }) => {
         },
       ],
     });
+  };
+
+  const handleBarClick = (elements: any) => {
+    if (elements.length === 0) return;
+  
+    const index = elements[0].index;
+    const condition = graphData.labels[index];
+  
+    const filteredPatients = ecgData
+      .filter((record) => record.ecgDescription.toLowerCase().includes(condition.toLowerCase()))
+      .map((patient) => ({ ...patient, severity: condition }));
+  
+    setFilteredPatients(filteredPatients);
   };
   
   return (
@@ -163,6 +177,7 @@ const GraphTwo: React.FC<GraphTwoProps> = ({ ecgData }) => {
                 },
               },
               maintainAspectRatio: false, // Make the chart responsive
+              onClick: (event, elements) => handleBarClick(elements),
             }}
             plugins={[ChartDataLabels]} // Add ChartDataLabels plugin
             height={400}
