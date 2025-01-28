@@ -1,12 +1,12 @@
 import React from "react";
 import "./RegionOrganization.css";
 
-interface Region {
+export interface Region {
   id: number;
   region_name: string;
 }
 
-interface Organization {
+export interface Organization {
   site_name: string;
   commercial_name: string;
   region_id: number;
@@ -19,7 +19,12 @@ interface RegionOrganizationSelectorProps {
   setOrganization: (organization: string) => void;
 }
 
-const regions: Region[] = [
+function getRegionIdForOrgId(orgId: string): number | null {
+  const org = organizations.find((o) => o.site_name === orgId);
+  return org ? org.region_id : null;
+}
+
+export const regions: Region[] = [
   { id: 1, region_name: 'АКМОЛИНСКАЯ ОБЛАСТЬ' },
   { id: 2, region_name: 'АКТЮБИНСКАЯ ОБЛАСТЬ' },
   { id: 3, region_name: 'АЛМАТИНСКАЯ ОБЛАСТЬ' },
@@ -43,7 +48,7 @@ const regions: Region[] = [
   { id: 22, region_name: 'УЛЫТАУСКАЯ ОБЛАСТЬ' }
 ];
 
-const organizations: Organization[] = [
+export const organizations: Organization[] = [
   { site_name: 'AKT01', commercial_name: 'ГКП "Айтекебийская РБ" на ПХВ ГУ УЗ Актюбинской области', region_id: 2 },
     { site_name: 'AKT02', commercial_name: 'ГКП "Каргалинская РБ" на ПХВ ГУ УЗ Актюбинской области', region_id: 2 },
     { site_name: 'AKT03', commercial_name: 'ГКП "Эмбинская районная больница" на ПХВ ГУ УЗ Актюбинской области', region_id: 2 },

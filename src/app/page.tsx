@@ -7,6 +7,8 @@ import "react-datepicker/dist/react-datepicker.css";
 import { ru } from "date-fns/locale";
 
 import RegionOrganizationSelector from "@/components/RegionOrganizationSelector";
+import { organizations } from "@/components/RegionOrganizationSelector";
+
 import GraphOne from "@/components/GraphOne";
 import GraphTwo from "@/components/GraphTwo";
 import GraphThree from "@/components/GraphThree";
@@ -34,6 +36,10 @@ interface ECGData {
   ecgLink: string;
 }
 
+function getRegionIdForOrgId(orgId: string): number | null {
+  const org = organizations.find((o) => o.site_name === orgId);
+  return org ? org.region_id : null;
+}
 
 
 export default function Home() {
@@ -80,11 +86,6 @@ export default function Home() {
       return;
     }
 
-    if (region !== null && !organization) {
-      alert("Пожалуйста, выберите организацию.");
-      return;
-    }
-
     const formattedDateFrom = dateFrom.split("-").reverse().join("-");
     const formattedDateTo = dateTo.split("-").reverse().join("-");
 
@@ -112,8 +113,16 @@ export default function Home() {
           Authorization: `Bearer ${token}`,
         },
       });
-
-      setEcgData(response.data);
+      
+      let finalData = response.data;
+      if (region && !organization) {
+        finalData = response.data.filter((item) => {
+          if (!item.recordedByOrgId) return false;
+          const itemRegionId = getRegionIdForOrgId(item.recordedByOrgId); 
+          return itemRegionId === region;
+        });
+    }
+      setEcgData(finalData);
     } catch (error) {
       console.error("Error fetching ECG data:", error);
       setEcgData(null);  // Reset ECG data on error
