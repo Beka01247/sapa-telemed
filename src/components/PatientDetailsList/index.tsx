@@ -137,11 +137,12 @@ const PatientDetailsList: React.FC<PatientDetailsListProps> = ({ ecgData, filter
   return (
     <div className={styles.scrollableContainer}>
       <h2 className={styles.patientListTitle}>Список обследованных пациентов</h2>
+      <h3 className={styles.patientListSubTitle}>(Нажмите на столб с диагнозом, чтобы увидеть пациентов в таблице)</h3>
       <div className={styles.filterButtons}>
         <button onClick={() => { setFilter(null); setFilteredPatients(null); }}>Все</button>
         <button onClick={() => { setFilter("yellow"); setFilteredPatients(null); }}>Патологии</button>
         <button onClick={() => { setFilter("orange"); setFilteredPatients(null); }}>Аритмии</button>
-        <button onClick={() => { setFilter("red"); setFilteredPatients(null); }}>Жизнеугрожающие Аритмии</button>
+        <button onClick={() => { setFilter("red"); setFilteredPatients(null); }}>Жизнеугрожающие аритмии</button>
         <button onClick={() => { setFilter("black"); setFilteredPatients(null); }}>ОКС</button>
       </div>
       {dataToDisplay.length > 0 ? (

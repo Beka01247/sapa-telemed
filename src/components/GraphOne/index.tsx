@@ -164,7 +164,7 @@ const GraphOne: React.FC<GraphOneProps> = ({ ecgData }) => {
         },
         
         {
-          label: "Жизнеугрожающие Аритмии",
+          label: "Жизнеугрожающие аритмии",
           data: redData,
           backgroundColor: "#e57373",
         },

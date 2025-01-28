@@ -76,7 +76,8 @@ const GraphThree: React.FC<GraphThreeProps> = ({ ecgData, setFilteredPatients })
 
   return (
     <div className="graph-container">
-      <h2 className="graph-title">АВ-блокада</h2>
+      <h2 className="graph-title" style={{ marginBottom: "1rem" }}>АВ-блокада</h2>
+   
 
       {!ecgData.length ? (
         <p className="no-data-label">Нет данных для отображения.</p>

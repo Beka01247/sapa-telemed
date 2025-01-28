@@ -34,13 +34,13 @@ interface ECGData {
   diagnosedById: string | null;
   diagnosedByOrg: string;
   ecgLink: string;
+  severity?: string; // Add severity property
 }
 
 function getRegionIdForOrgId(orgId: string): number | null {
   const org = organizations.find((o) => o.site_name === orgId);
   return org ? org.region_id : null;
 }
-
 
 export default function Home() {
   const [region, setRegion] = useState<number | null>(null);
@@ -52,6 +52,15 @@ export default function Home() {
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [ecgData, setEcgData] = useState<ECGData[] | null>(null);
   const [filteredPatients, setFilteredPatients] = useState<any[] | null>(null);
+
+  const [summary, setSummary] = useState({
+    total: 0,
+    green: 0,
+    yellow: 0,
+    orange: 0,
+    red: 0,
+    black: 0,
+  });
 
   useEffect(() => {
     if (region !== null) {
@@ -121,7 +130,7 @@ export default function Home() {
           const itemRegionId = getRegionIdForOrgId(item.recordedByOrgId); 
           return itemRegionId === region;
         });
-    }
+      }
       setEcgData(finalData);
     } catch (error) {
       console.error("Error fetching ECG data:", error);
@@ -136,6 +145,19 @@ export default function Home() {
     setEcgData(null);
     setFilteredPatients(null);
   }, [organization]);
+
+  useEffect(() => {
+    if (ecgData) {
+      const total = ecgData.length;
+      const green = ecgData.filter((patient) => !patient.severity).length;
+      const yellow = ecgData.filter((patient) => patient.severity === "yellow").length;
+      const orange = ecgData.filter((patient) => patient.severity === "orange").length;
+      const red = ecgData.filter((patient) => patient.severity === "red").length;
+      const black = ecgData.filter((patient) => patient.severity === "black").length;
+
+      setSummary({ total, green, yellow, orange, red, black });
+    }
+  }, [ecgData]);
 
   const calculateAge = (birthDate: string | null): number => {
     if (!birthDate) {
@@ -170,7 +192,7 @@ export default function Home() {
           setOrganization={setOrganization}
         />
         <br />
-        <h2 className="dateLabel">Данные за период</h2>
+        <h2 className={styles.dateLabel}>Данные за период</h2>
         <div className={styles.datePickers}>
           <div className={styles.datePickerItem}>
             <label className={styles.datePickerLabel}>От (дата):</label>
@@ -241,6 +263,14 @@ export default function Home() {
         <p className={styles.noDataMessage}>Нет данных для отображения.</p>
       ) : ecgData ? (
         <>
+          <div className={styles.summaryBox}>
+            <p>Всего пациентов ЭКГ: <span className={styles.bold}>{summary.total}</span></p>
+            <p>Пациенты в зеленой категории (В норме): <span className={styles.bold}>{summary.green}</span></p>
+            <p>Пациенты в желтой категории (Патологии): <span className={styles.bold}>{summary.yellow}</span></p>
+            <p>Пациенты в оранжевой категории (Aритмии): <span className={styles.bold}>{summary.orange}</span></p>
+            <p>Пациенты в красной категории (Жизнеугрожающие аритмии): <span className={styles.bold}>{summary.red}</span></p>
+            <p>Пациенты в черной категории (ОКС): <span className={styles.bold}>{summary.black}</span></p>
+          </div>
           <div className={styles.allGraphsContainer}>
             <div className={styles.graphCard}>
               <GraphOne ecgData={ecgData} />

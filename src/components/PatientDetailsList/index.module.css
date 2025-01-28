@@ -16,6 +16,13 @@
   color: #333;
 }
 
+.patientListSubTitle {
+  text-align: center;
+  font-size: 1rem;
+  font-weight: lighter;
+  margin-bottom: 2rem;
+  color: #333;
+}
 .patientTable {
   width: 100%;
   border-collapse: collapse;

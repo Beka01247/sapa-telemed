@@ -109,7 +109,7 @@ const GraphFour: React.FC<GraphFourProps> = ({ ecgData, setFilteredPatients }) =
 
   return (
     <div className="graph-container">
-      <h2 className="graph-title" style={{ fontWeight: "bold", color: "#333" }}>
+      <h2 className="graph-title" style={{ marginBottom: "1rem" }}>
         Нарушение внутрижелудочковой проводимости
       </h2>
 

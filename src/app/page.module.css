@@ -14,6 +14,15 @@
   font-family: "Segoe UI", Arial, sans-serif;
 }
 
+.graphInstruction {
+  text-align: center;
+  font-size: 14px;
+  color: #555;
+  margin-top: 1rem;
+  margin-bottom: 1rem;
+  font-weight: bold;
+}
+
 .title {
   text-align: center;
   font-size: 2rem;
@@ -214,6 +223,29 @@
   text-align: center;
   font-style: italic;
   margin-top: -30px;
+}
+
+.summaryBox {
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  padding: 1rem;
+  margin-top: 1rem;
+  margin-bottom: 2rem;
+  text-align: center;
+  font-size: 1rem;
+  color: #333;
+}
+
+.summaryBox p {
+  margin: 0.5rem 0;
+}
+
+.bold {
+  font-weight: bold;
+}
+
+.summaryBox p {
+  margin: 0.5rem 0;
 }
 
 
