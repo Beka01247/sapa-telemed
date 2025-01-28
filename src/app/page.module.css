@@ -231,9 +231,12 @@
   padding: 1rem;
   margin-top: 1rem;
   margin-bottom: 2rem;
+  width: 40%;
   text-align: center;
   font-size: 1rem;
   color: #333;
+  margin-left: auto; /* Center horizontally */
+  margin-right: auto; /* Center horizontally */
 }
 
 .summaryBox p {
