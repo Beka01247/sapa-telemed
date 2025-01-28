@@ -26,17 +26,19 @@ const GraphFive: React.FC<GraphFiveProps> = ({ ecgData }) => {
     const counts = {
       women: { withArrhythmia: 0, withoutArrhythmia: 0 },
       men: { withArrhythmia: 0, withoutArrhythmia: 0 },
+      unknown: { withArrhythmia: 0, withoutArrhythmia: 0 },
     };
 
     data.forEach((record) => {
-      const hasArrhythmia = record.ecgDescription.toLowerCase().includes("аритмия");
-      const isFemale = record.sex.toLowerCase() === "жен";
-      const isMale = record.sex.toLowerCase() === "муж";
+      const hasArrhythmia = record.ecgDescription?.toLowerCase().includes("аритмия") || false;
+      const sex = record.sex?.toLowerCase() || 'unknown';
 
-      if (isFemale) {
+      if (sex === "жен") {
         hasArrhythmia ? counts.women.withArrhythmia++ : counts.women.withoutArrhythmia++;
-      } else if (isMale) {
+      } else if (sex === "муж") {
         hasArrhythmia ? counts.men.withArrhythmia++ : counts.men.withoutArrhythmia++;
+      } else {
+        hasArrhythmia ? counts.unknown.withArrhythmia++ : counts.unknown.withoutArrhythmia++;
       }
     });
 
@@ -54,8 +56,14 @@ const GraphFive: React.FC<GraphFiveProps> = ({ ecgData }) => {
             counts.women.withArrhythmia,
             counts.men.withoutArrhythmia,
             counts.men.withArrhythmia,
+            counts.unknown.withoutArrhythmia,
+            counts.unknown.withArrhythmia,
           ],
-          backgroundColor: ["#ff63c5", "#ff63c5AA", "#36c0eb", "#36c0ebAA"],
+          backgroundColor: [
+            "#ff63c5", "#ff63c5AA",
+            "#36c0eb", "#36c0ebAA",
+            "#gray", "#grayAA"
+          ],
           hoverOffset: 5,
         },
       ],

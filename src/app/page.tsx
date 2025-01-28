@@ -96,6 +96,7 @@ export default function Home() {
 
     setIsLoading(true);
     setEcgData(null);
+    setFilteredPatients(null);
 
     try {
       let url = "";
@@ -115,10 +116,17 @@ export default function Home() {
       setEcgData(response.data);
     } catch (error) {
       console.error("Error fetching ECG data:", error);
+      setEcgData(null);  // Reset ECG data on error
     } finally {
       setIsLoading(false);
     }
   };
+
+  // Add an effect to reset data when organization changes
+  useEffect(() => {
+    setEcgData(null);
+    setFilteredPatients(null);
+  }, [organization]);
 
   const calculateAge = (birthDate: string | null): number => {
     if (!birthDate) {
