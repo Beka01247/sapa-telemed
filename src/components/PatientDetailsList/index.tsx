@@ -86,6 +86,8 @@ const yellowConditions = [
 
 const lvhConditions = [
   "Гипертрофия левого желудочка",
+  "Нарушение реполяризаций нижн ст, боковые",
+  "Неспециф измен зубца Т по нижней и передне-перегородочной ст"
 ];
 
 const blackConditions = [
@@ -151,7 +153,7 @@ const PatientDetailsList: React.FC<PatientDetailsListProps> = ({ ecgData, filter
         <button onClick={() => { setFilter("orange"); setFilteredPatients(null); }}>Аритмии</button>
         <button onClick={() => { setFilter("red"); setFilteredPatients(null); }}>Жизнеугрожающие аритмии</button>
         <button onClick={() => { setFilter("black"); setFilteredPatients(null); }}>ОКС</button>
-        <button onClick={() => { setFilter("lvh"); setFilteredPatients(null); }}>Гипертрофия ЛЖ</button>
+        <button onClick={() => { setFilter("lvh"); setFilteredPatients(null); }}>Гипертония</button>
       </div>
       {dataToDisplay.length > 0 ? (
         <table className={styles.patientTable}>
