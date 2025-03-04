@@ -98,4 +98,9 @@
   color: white;
 }
 
+.filterButtons > button:nth-child(6) {
+  background-color: #bc37d3; 
+  color: white;
+}
+
 

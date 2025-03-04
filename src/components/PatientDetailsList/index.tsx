@@ -81,8 +81,11 @@ const yellowConditions = [
   "Гипертрофия правого предсердия",
   "Гипертрофия левого предсердия",
   "Гипертрофия правого желудочка",
-  "Гипертрофия левого желудочка",
   "С нарушением процессов реполяризации",
+];
+
+const lvhConditions = [
+  "Гипертрофия левого желудочка",
 ];
 
 const blackConditions = [
@@ -123,12 +126,16 @@ const PatientDetailsList: React.FC<PatientDetailsListProps> = ({ ecgData, filter
       patient.severity = "black";
       return filter === null || filter === "black";
     }
+    if (lvhConditions.some((condition) => description.includes(condition.toLowerCase()))) {
+      patient.severity = "lvh";
+      return filter === null || filter === "lvh";
+    }
     return false;
   });
 
-  // Sort by severity (red, orange, black, yellow)
+  // Sort by severity (red, orange, black, yellow, lvh)
   filteredData.sort((a, b) => {
-    const order = ["red", "orange", "black", "yellow"];
+    const order = ["red", "orange", "black", "yellow", "lvh"];
     return order.indexOf(a.severity) - order.indexOf(b.severity);
   });
 
@@ -144,6 +151,7 @@ const PatientDetailsList: React.FC<PatientDetailsListProps> = ({ ecgData, filter
         <button onClick={() => { setFilter("orange"); setFilteredPatients(null); }}>Аритмии</button>
         <button onClick={() => { setFilter("red"); setFilteredPatients(null); }}>Жизнеугрожающие аритмии</button>
         <button onClick={() => { setFilter("black"); setFilteredPatients(null); }}>ОКС</button>
+        <button onClick={() => { setFilter("lvh"); setFilteredPatients(null); }}>Гипертрофия ЛЖ</button>
       </div>
       {dataToDisplay.length > 0 ? (
         <table className={styles.patientTable}>
@@ -175,7 +183,7 @@ const PatientDetailsList: React.FC<PatientDetailsListProps> = ({ ecgData, filter
                   </a>
                 </td>
                 <td>
-  {["red", "orange", "yellow", "black", "avBlock"].includes(patient.severity) ? (
+  {["red", "orange", "yellow", "black", "lvh"].includes(patient.severity) ? (
     <span
       style={{
         display: "inline-block",
@@ -191,6 +199,8 @@ const PatientDetailsList: React.FC<PatientDetailsListProps> = ({ ecgData, filter
             ? "#ffeb3b"
             : patient.severity === "black"
             ? "#424242"
+            : patient.severity === "lvh"
+            ? "#bc37d3"
             : "#81c784",
         margin: "16px",
       }}
