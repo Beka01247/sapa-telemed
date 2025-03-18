@@ -100,6 +100,12 @@ const blackConditions = [
 	"Инфаркт миокарда без зубца Q подострый период", 
 ];
 
+const lvhConditions = [
+  "Гипертрофия левого желудочка",
+  "Нарушение реполяризаций нижн ст, боковые",
+  "Неспециф измен зубца Т по нижней и передне-перегородочной ст"
+];
+
 const GraphOne: React.FC<GraphOneProps> = ({ ecgData }) => {
   const [graphData, setGraphData] = useState<GraphData | null>(null);
 
@@ -109,19 +115,20 @@ const GraphOne: React.FC<GraphOneProps> = ({ ecgData }) => {
   }, [ecgData]);
 
   const processGraphData = (data: ECGData[]) => {
-    const dateCounts: Record<string, { green: number; yellow: number; orange: number; red: number; black: number }> = {};
+    const dateCounts: Record<string, { green: number; yellow: number; orange: number; red: number; black: number; lvh: number }> = {};
 
     const redConditionsLower = redConditions.map((c) => c.toLowerCase());
     const orangeConditionsLower = orangeConditions.map((c) => c.toLowerCase());
     const yellowConditionsLower = yellowConditions.map((c) => c.toLowerCase());
     const blackConditionsLower = blackConditions.map((c) => c.toLowerCase());
+    const lvhConditionsLower = lvhConditions.map((c) => c.toLowerCase());
 
     data.forEach((record) => {
       const date = record.ecgDate.split("T")[0];
       const descLower = record.ecgDescription.toLowerCase();
 
       if (!dateCounts[date]) {
-        dateCounts[date] = { green: 0, yellow: 0, orange: 0, red: 0, black: 0 };
+        dateCounts[date] = { green: 0, yellow: 0, orange: 0, red: 0, black: 0, lvh: 0 };
       }
 
       if (redConditionsLower.some((c) => descLower.includes(c))) {
@@ -132,6 +139,8 @@ const GraphOne: React.FC<GraphOneProps> = ({ ecgData }) => {
         dateCounts[date].orange++;
       } else if (yellowConditionsLower.some((c) => descLower.includes(c))) {
         dateCounts[date].yellow++;
+      } else if (lvhConditionsLower.some((c) => descLower.includes(c))) {
+        dateCounts[date].lvh++;
       } else {
         dateCounts[date].green++;
       }
@@ -143,6 +152,7 @@ const GraphOne: React.FC<GraphOneProps> = ({ ecgData }) => {
     const orangeData = labels.map((label) => dateCounts[label].orange);
     const redData = labels.map((label) => dateCounts[label].red);
     const blackData = labels.map((label) => dateCounts[label].black);
+    const lvhData = labels.map((label) => dateCounts[label].lvh);
 
     setGraphData({
       labels,
@@ -172,6 +182,11 @@ const GraphOne: React.FC<GraphOneProps> = ({ ecgData }) => {
           label: "ОКС",
           data: blackData,
           backgroundColor: "#424242",
+        },
+        {
+          label: "Гипертония",
+          data: lvhData,
+          backgroundColor: "#bc37d3",
         },
       ],
     });
@@ -217,7 +232,7 @@ const GraphOne: React.FC<GraphOneProps> = ({ ecgData }) => {
 
   return (
     <div className="graph-container">
-      <h2 className="graph-title">Результаты ЭКГ скрининга</h2>
+      <h2 className="graph-title">Онлайн-аналитика телеметрии ЭКГ “Сапа Телемед”</h2>
       {!ecgData.length ? (
         <p className="no-data-label">Нет данных для отображения.</p>
       ) : !graphData ? (
