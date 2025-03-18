@@ -272,7 +272,7 @@ export default function Home() {
             <p>Пациенты в оранжевой категории (Aритмии): <span className={styles.bold}>{summary.orange}</span></p>
             <p>Пациенты в красной категории (Жизнеугрожающие аритмии): <span className={styles.bold}>{summary.red}</span></p>
             <p>Пациенты в черной категории (ОКС): <span className={styles.bold}>{summary.black}</span></p>
-            <p>Пациенты с гипертонией: <span className={styles.bold}>{summary.lvh}</span></p>
+            <p>Пациенты в фиолетовой категории (Гипертония): <span className={styles.bold}>{summary.lvh}</span></p>
           </div>
           <div className={styles.allGraphsContainer}>
             <div className={styles.graphCard}>

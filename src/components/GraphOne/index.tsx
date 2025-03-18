@@ -85,8 +85,7 @@ const yellowConditions = [
 "Гипертрофии", 
 "Гипертрофия правого предсердия", 
 "Гипертрофия левого предсердия", 
-"Гипертрофия правого желудочка", 
-"Гипертрофия левого желудочка", 
+"Гипертрофия правого желудочка",
 "С нарушением процессов реполяризации",  
 ];
 
@@ -133,12 +132,12 @@ const GraphOne: React.FC<GraphOneProps> = ({ ecgData }) => {
 
       if (redConditionsLower.some((c) => descLower.includes(c))) {
         dateCounts[date].red++;
-      } else if (blackConditionsLower.some((c) => descLower.includes(c))) {
-        dateCounts[date].black++;
       } else if (orangeConditionsLower.some((c) => descLower.includes(c))) {
         dateCounts[date].orange++;
       } else if (yellowConditionsLower.some((c) => descLower.includes(c))) {
         dateCounts[date].yellow++;
+      } else if (blackConditionsLower.some((c) => descLower.includes(c))) {
+        dateCounts[date].black++;
       } else if (lvhConditionsLower.some((c) => descLower.includes(c))) {
         dateCounts[date].lvh++;
       } else {
