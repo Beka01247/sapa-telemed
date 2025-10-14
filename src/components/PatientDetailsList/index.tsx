@@ -176,10 +176,10 @@ const PatientDetailsList: React.FC<PatientDetailsListProps> = ({ ecgData, filter
                   {new Date(patient.ecgDate).toLocaleDateString()}{" "}
                   {new Date(patient.ecgDate).toLocaleTimeString("en-GB")}
                 </td>
-                <td>{patient.bDate ? calculateAge(patient.bDate) : "Неизвестно"}</td>
-                <td>{patient.sex  || "Неизвестно"}</td>
-                <td>{patient.iin  || "Неизвестно"}</td>
-                <td>{patient.orgDivision || "Неизвестно"}</td>
+                <td>{patient.bDate ? calculateAge(patient.bDate) : "-"}</td>
+                <td>{patient.sex  || "-"}</td>
+                <td>{patient.iin  || "-"}</td>
+                <td>{patient.orgDivision || "-"}</td>
                 <td>{patient.ecgDescription}</td>
                 <td>
                   <a href={patient.ecgLink} target="_blank" rel="noopener noreferrer">
