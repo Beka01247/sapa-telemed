@@ -163,6 +163,7 @@ const PatientDetailsList: React.FC<PatientDetailsListProps> = ({ ecgData, filter
               <th>Возраст</th>
               <th>Пол</th>
               <th>ИИН</th>
+              <th>Отделение</th>
               <th>Описание ЭКГ</th>
               <th>Ссылка</th>
               <th>Статус</th>
@@ -176,8 +177,9 @@ const PatientDetailsList: React.FC<PatientDetailsListProps> = ({ ecgData, filter
                   {new Date(patient.ecgDate).toLocaleTimeString("en-GB")}
                 </td>
                 <td>{patient.bDate ? calculateAge(patient.bDate) : "Неизвестно"}</td>
-                <td>{patient.sex}</td>
-                <td>{patient.iin}</td>
+                <td>{patient.sex  || "Неизвестно"}</td>
+                <td>{patient.iin  || "Неизвестно"}</td>
+                <td>{patient.orgDivision || "Неизвестно"}</td>
                 <td>{patient.ecgDescription}</td>
                 <td>
                   <a href={patient.ecgLink} target="_blank" rel="noopener noreferrer">
