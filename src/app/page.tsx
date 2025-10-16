@@ -34,6 +34,7 @@ interface ECGData {
   diagnosedById: string | null;
   diagnosedByOrg: string;
   ecgLink: string;
+  orgDivision?: string; // Add orgDivision property
   severity?: string; // Add severity property
 }
 
@@ -52,6 +53,7 @@ export default function Home() {
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [ecgData, setEcgData] = useState<ECGData[] | null>(null);
   const [filteredPatients, setFilteredPatients] = useState<any[] | null>(null);
+  const [showOrgModal, setShowOrgModal] = useState<boolean>(false);
 
   const [summary, setSummary] = useState({
     total: 0,
@@ -182,6 +184,22 @@ export default function Home() {
       }))
     : [];
 
+  // Calculate organization statistics
+  const getOrganizationStats = () => {
+    if (!ecgData) return [];
+    
+    const orgStats: { [key: string]: number } = {};
+    
+    ecgData.forEach((patient) => {
+      const orgName = patient.orgDivision || "-";
+      orgStats[orgName] = (orgStats[orgName] || 0) + 1;
+    });
+
+    return Object.entries(orgStats)
+      .map(([org, count]) => ({ org, count }))
+      .sort((a, b) => b.count - a.count);
+  };
+
   return (
     <div className={styles.pageWrapper}>
       <h1 className={styles.title}>ЭКГ-скрининг «Sapa Telemed»</h1>
@@ -273,6 +291,15 @@ export default function Home() {
             <p>Пациенты в красной категории (Жизнеугрожающие аритмии): <span className={styles.bold}>{summary.red}</span></p>
             <p>Пациенты в черной категории (ОКС): <span className={styles.bold}>{summary.black}</span></p>
             <p>Пациенты в фиолетовой категории (Гипертония): <span className={styles.bold}>{summary.lvh}</span></p>
+            <div className={styles.orgReportRow}>
+              <span>Отчет по отделениям: </span>
+              <button 
+                className={styles.orgReportSmallButton}
+                onClick={() => setShowOrgModal(true)}
+              >
+                Посмотреть
+              </button>
+            </div>
           </div>
           <div className={styles.allGraphsContainer}>
             <div className={styles.graphCard}>
@@ -304,6 +331,41 @@ export default function Home() {
           <div className={styles.patientListWrapper}>
             <PatientDetailsList ecgData={ecgData} filteredPatients={filteredPatients} setFilteredPatients={setFilteredPatients} />
           </div>
+
+          {/* Organization Report Modal */}
+          {showOrgModal && (
+            <div className={styles.modalOverlay} onClick={() => setShowOrgModal(false)}>
+              <div className={styles.modalContent} onClick={(e) => e.stopPropagation()}>
+                <div className={styles.modalHeader}>
+                  <h3>Отчет по отделениям</h3>
+                  <button 
+                    className={styles.modalCloseButton}
+                    onClick={() => setShowOrgModal(false)}
+                  >
+                    ×
+                  </button>
+                </div>
+                <div className={styles.modalBody}>
+                  <table className={styles.orgTable}>
+                    <thead>
+                      <tr>
+                        <th>Отделение</th>
+                        <th>Количество ЭКГ</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {getOrganizationStats().map((stat, index) => (
+                        <tr key={index}>
+                          <td>{stat.org}</td>
+                          <td>{stat.count}</td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                </div>
+              </div>
+            </div>
+          )}
         </>
       ) : (
         <p className={styles.noDataMessage}>Пожалуйста, выберите параметры и нажмите "Получить результаты".</p>
