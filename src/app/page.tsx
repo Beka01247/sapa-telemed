@@ -6,8 +6,8 @@ import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
 import { ru } from "date-fns/locale";
 
-import RegionOrganizationSelector from "@/components/RegionOrganizationSelector";
-import { organizations } from "@/components/RegionOrganizationSelector";
+import RegionOrganizationSelector, { getRegionIdForOrgId, fetchOrganizations } from "@/components/RegionOrganizationSelector";
+import type { Organization } from "@/components/RegionOrganizationSelector";
 
 import GraphOne from "@/components/GraphOne";
 import GraphTwo from "@/components/GraphTwo";
@@ -38,10 +38,7 @@ interface ECGData {
   severity?: string; // Add severity property
 }
 
-function getRegionIdForOrgId(orgId: string): number | null {
-  const org = organizations.find((o) => o.site_name === orgId);
-  return org ? org.region_id : null;
-}
+
 
 export default function Home() {
   const [region, setRegion] = useState<number | null>(null);
@@ -54,6 +51,7 @@ export default function Home() {
   const [ecgData, setEcgData] = useState<ECGData[] | null>(null);
   const [filteredPatients, setFilteredPatients] = useState<any[] | null>(null);
   const [showOrgModal, setShowOrgModal] = useState<boolean>(false);
+  const [organizations, setOrganizations] = useState<Organization[]>([]);
 
   const [summary, setSummary] = useState({
     total: 0,
@@ -72,6 +70,22 @@ export default function Home() {
       setShowRegionNote(true);
     }
   }, [region]);
+
+  // Load organizations data on mount
+  useEffect(() => {
+    const loadOrganizations = async () => {
+      try {
+        const data = await fetchOrganizations();
+        if (data) {
+          setOrganizations(data.organizations);
+        }
+      } catch (error) {
+        console.error("Error loading organizations:", error);
+      }
+    };
+
+    loadOrganizations();
+  }, []);
 
   const fetchToken = async (): Promise<string | null> => {
     try {
@@ -130,7 +144,7 @@ export default function Home() {
       if (region && !organization) {
         finalData = response.data.filter((item) => {
           if (!item.recordedByOrgId) return false;
-          const itemRegionId = getRegionIdForOrgId(item.recordedByOrgId); 
+          const itemRegionId = getRegionIdForOrgId(item.recordedByOrgId, organizations); 
           return itemRegionId === region;
         });
       }
