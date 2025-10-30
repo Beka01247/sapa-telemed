@@ -52,6 +52,9 @@ export default function Home() {
   const [filteredPatients, setFilteredPatients] = useState<any[] | null>(null);
   const [showOrgModal, setShowOrgModal] = useState<boolean>(false);
   const [organizations, setOrganizations] = useState<Organization[]>([]);
+  const [regions, setRegions] = useState<{ id: number; region_name: string }[]>([]);
+  const [orgDataLoading, setOrgDataLoading] = useState<boolean>(true);
+  const [orgDataError, setOrgDataError] = useState<string | null>(null);
 
   const [summary, setSummary] = useState({
     total: 0,
@@ -74,13 +77,22 @@ export default function Home() {
   // Load organizations data on mount
   useEffect(() => {
     const loadOrganizations = async () => {
+      setOrgDataLoading(true);
+      setOrgDataError(null);
+      
       try {
         const data = await fetchOrganizations();
         if (data) {
           setOrganizations(data.organizations);
+          setRegions(data.regions);
+        } else {
+          setOrgDataError("Failed to load regions and organizations");
         }
       } catch (error) {
+        setOrgDataError("Error loading data");
         console.error("Error loading organizations:", error);
+      } finally {
+        setOrgDataLoading(false);
       }
     };
 
@@ -109,6 +121,12 @@ export default function Home() {
   const fetchAllGraphsData = async (): Promise<void> => {
     if (!dateFrom || !dateTo) {
       alert("Пожалуйста, выберите даты.");
+      return;
+    }
+
+    // If region is selected but organizations are not loaded yet, wait for them
+    if (region !== null && !organization && (orgDataLoading || organizations.length === 0)) {
+      alert("Загрузка организаций... Пожалуйста, попробуйте снова через несколько секунд.");
       return;
     }
 
@@ -141,7 +159,7 @@ export default function Home() {
       });
       
       let finalData = response.data;
-      if (region && !organization) {
+      if (region !== null && !organization && organizations.length > 0) {
         finalData = response.data.filter((item) => {
           if (!item.recordedByOrgId) return false;
           const itemRegionId = getRegionIdForOrgId(item.recordedByOrgId, organizations); 
@@ -224,6 +242,10 @@ export default function Home() {
           setRegion={setRegion}
           organization={organization}
           setOrganization={setOrganization}
+          regions={regions}
+          organizations={organizations}
+          isLoading={orgDataLoading}
+          error={orgDataError}
         />
         <br />
         <h2 className={styles.dateLabel}>Данные за период</h2>
@@ -278,10 +300,12 @@ export default function Home() {
         <button
           className={styles.fetchButton}
           onClick={fetchAllGraphsData}
-          disabled={isLoading}
+          disabled={isLoading || (region !== null && !organization && (orgDataLoading || organizations.length === 0))}
         >
           {isLoading
             ? "Загрузка..."
+            : (region !== null && !organization && (orgDataLoading || organizations.length === 0))
+            ? "Загрузка организаций..."
             : organization
             ? "Получить результаты для организации"
             : "Получить все результаты"}

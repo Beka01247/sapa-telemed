@@ -26,6 +26,10 @@ interface RegionOrganizationSelectorProps {
   setRegion: (region: number | null) => void;
   organization: string;
   setOrganization: (organization: string) => void;
+  regions: Region[];
+  organizations: Organization[];
+  isLoading: boolean;
+  error: string | null;
 }
 
 // Function to fetch token
@@ -106,36 +110,11 @@ const RegionOrganizationSelector: React.FC<RegionOrganizationSelectorProps> = ({
   setRegion,
   organization,
   setOrganization,
+  regions,
+  organizations,
+  isLoading,
+  error,
 }) => {
-  const [regions, setRegions] = useState<Region[]>([]);
-  const [organizations, setOrganizations] = useState<Organization[]>([]);
-  const [isLoading, setIsLoading] = useState<boolean>(true);
-  const [error, setError] = useState<string | null>(null);
-
-  // Fetch data on component mount
-  useEffect(() => {
-    const loadData = async () => {
-      setIsLoading(true);
-      setError(null);
-      
-      try {
-        const data = await fetchOrganizations();
-        if (data) {
-          setRegions(data.regions);
-          setOrganizations(data.organizations);
-        } else {
-          setError("Failed to load regions and organizations");
-        }
-      } catch (err) {
-        setError("Error loading data");
-        console.error("Error loading regions and organizations:", err);
-      } finally {
-        setIsLoading(false);
-      }
-    };
-
-    loadData();
-  }, []);
 
   const filteredOrganizations = organizations.filter(
     (org: Organization) => org.region_id === region
