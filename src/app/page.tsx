@@ -234,7 +234,7 @@ export default function Home() {
 
   return (
     <div className={styles.pageWrapper}>
-      <h1 className={styles.title}>ЭКГ-скрининг «Sapa Telemed»</h1>
+      <h1 className={styles.title}>Онлайн-аналитика «Sapa Telemed»</h1>
 
       <div className={styles.selectorContainer}>
         <RegionOrganizationSelector
